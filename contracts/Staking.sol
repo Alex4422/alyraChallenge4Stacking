@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.9;
 
-import './StackCoin.sol';
+import './StakeCoin.sol';
 
-contract Stacking {
+contract Staking {
 
     string public name = 'Stacking';
     address public owner;
@@ -36,6 +36,8 @@ contract Stacking {
      * @param _amount
      */
     function depositTokens(uint _amount) public {
+
+        //require staking
 
         //transfer stackCoin tokens to this contract address for this stakingBalance
         stackCoin.transferFrom(msg.sender, address(this), _amount);
