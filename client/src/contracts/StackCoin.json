@@ -1,0 +1,115 @@
+{
+  "contractName": "StackCoin",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/alexandre/WebstormProjects/alyraChallenge4Stacking/contracts/StackCoin.sol\":\"StackCoin\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/alexandre/WebstormProjects/alyraChallenge4Stacking/contracts/StackCoin.sol\":{\"keccak256\":\"0x057b3f793c121d53857fb8098973e248b68dfa3438948c77c47a551a980a940e\",\"urls\":[\"bzz-raw://a81400a0998098aa5c602344117063c66c4da730c394db9556d8f8d4b7ee07fb\",\"dweb:/ipfs/Qmb73EAGdDpUJPV85tG3rLoMXx3Z8aBpF72dPiqVAGpiGP\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220c783914796d32ca7bd7b69ac292549fd51e833e45b0420385dc0040e7fc23bb064736f6c63430008090033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220c783914796d32ca7bd7b69ac292549fd51e833e45b0420385dc0040e7fc23bb064736f6c63430008090033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "24:23:2:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "24:23:2:-:0;;;;;",
+  "source": "pragma solidity 0.8.9;\n\ncontract StackCoin {\n\n}\n",
+  "sourcePath": "/Users/alexandre/WebstormProjects/alyraChallenge4Stacking/contracts/StackCoin.sol",
+  "ast": {
+    "absolutePath": "/Users/alexandre/WebstormProjects/alyraChallenge4Stacking/contracts/StackCoin.sol",
+    "exportedSymbols": {
+      "StackCoin": [
+        62
+      ]
+    },
+    "id": 63,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 61,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:22:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "StackCoin",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 62,
+        "linearizedBaseContracts": [
+          62
+        ],
+        "name": "StackCoin",
+        "nameLocation": "33:9:2",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 63,
+        "src": "24:23:2",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:48:2"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/alexandre/WebstormProjects/alyraChallenge4Stacking/contracts/StackCoin.sol",
+    "exportedSymbols": {
+      "StackCoin": [
+        62
+      ]
+    },
+    "id": 63,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 61,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:22:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "StackCoin",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 62,
+        "linearizedBaseContracts": [
+          62
+        ],
+        "name": "StackCoin",
+        "nameLocation": "33:9:2",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 63,
+        "src": "24:23:2",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:48:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.1",
+  "updatedAt": "2021-10-26T14:06:00.880Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
