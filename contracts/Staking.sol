@@ -51,21 +51,42 @@ contract Staking {
     */
     function removeStakeholder(address _stakeholder) public {
 
-    //(bool _isStakeholder, ) = isStakeholder(_stakeholder);
+        //(bool _isStakeholder, ) = isStakeholder(_stakeholder);
 
-    //if (_isStakeholder) stakeholders.remove(_stakeholder);
+        //if (_isStakeholder) stakeholders.remove(_stakeholder);
 
-    (bool _isStakeholder, uint256 s) = isStakeholder(_stakeholder);
+        (bool _isStakeholder, uint256 s) = isStakeholder(_stakeholder);
 
-    if (_isStakeholder) {
-        stakeholders[s] = stakeholders[stakeholders.length - 1];
-        stakeholders.pop();
+        if (_isStakeholder) {
+            stakeholders[s] = stakeholders[stakeholders.length - 1];
+            stakeholders.pop();
+        }
+
     }
 
-    }
+
+    // get the data for a stakeholder from the stakes mapping
+
+    //function stakeOf();
+
+    //function to aggregate stakes from all stakeholders
 
 
+    //create & remove stakes functions
 
+
+    //***************************** rewards
+
+
+    //function to allow the stakeholder to check his rewards
+
+    //function to aggregate rewards from all stakeholders
+
+    //function to calculate rewards for each stakeholder
+
+    //function to distribute rewards to all stakeholders
+
+    //function to allow the stakeholder to withdraw his rewards
 
 
 }
