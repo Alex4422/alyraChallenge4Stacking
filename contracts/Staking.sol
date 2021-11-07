@@ -64,13 +64,30 @@ contract Staking {
 
     }
 
+    /**
+        @notice get the amount of stake of a X StakeHolder
+        @param _addressStakeHolder the address of the stakeHolder to put in order to get the stake
+        @return The sum in wei
+    */
+    function stakeOf(address _addressStakeHolder) public view returns (uint256){
 
-    // get the data for a stakeholder from the stakes mapping
+        return(stakes[_addressStakeHolder]);
+    }
 
-    //function stakeOf();
+    /**
+        @notice aggregates all the stakes of all stakeholders
+        @return uint256 The sum of the stakes from all stakeholders
+    */
+    function sumOfStakes() public view returns(uint256){
 
-    //function to aggregate stakes from all stakeholders
+        uint256 sumStakes = 0;
+        for(uint256 i=0; i < stakeholders.length; i += 1){
+            sumStakes = sumStakes + stakes[stakeholders[i]] ;
+        }
 
+        return sumStakes;
+
+    }
 
     //create & remove stakes functions
 
