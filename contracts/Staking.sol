@@ -2,6 +2,8 @@
 pragma solidity 0.8.9;
 
 import './StakeCoin.sol';
+import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
     @title Staking
@@ -9,14 +11,22 @@ import './StakeCoin.sol';
     @notice allows to deposit tokens and invests in a business
 
 */
-contract Staking {
+contract Staking is Ownable {
 
-    //************* variables *************
-    //to watch the stakeholders
+    /**
+     * @notice to know who are all the stakeholders
+     */
     address[] internal stakeholders;
 
-    //The stakes for each stakeholder
+    /**
+     * @notice The stakes for each stakeholder
+     */
     mapping(address => uint256) internal stakes;
+
+    /**
+     * @notice Number of staking slot
+     */
+    uint slotsAvailable = 100;
 
     /**
         @notice determines if the address Ethereum is stakeHolder or not
@@ -51,17 +61,12 @@ contract Staking {
     */
     function removeStakeholder(address _stakeholder) public {
 
-        //(bool _isStakeholder, ) = isStakeholder(_stakeholder);
-
-        //if (_isStakeholder) stakeholders.remove(_stakeholder);
-
         (bool _isStakeholder, uint256 s) = isStakeholder(_stakeholder);
 
         if (_isStakeholder) {
             stakeholders[s] = stakeholders[stakeholders.length - 1];
             stakeholders.pop();
         }
-
     }
 
     /**
@@ -86,11 +91,35 @@ contract Staking {
         }
 
         return sumStakes;
-
     }
 
-    //create & remove stakes functions
+    /**
+        @notice a method for a stakeholder to create a stake
+        @param _stake The size of the stake to be created
+    */
+    function createStake(uint256 _stake) public {
 
+        if(stakes[msg.sender] == 0){
+            slotsAvailable--;
+            addStakeholder(msg.sender);
+        }
+
+        stakes[msg.sender] = stakes[msg.sender] + _stake;
+    }
+
+    /**
+        @notice a method for a stakeholder to remove a stake
+        @param _stake The size of the stake to be removed
+    */
+    function removeStake(uint256 _stake) public{
+
+        stakes[msg.sender] = stakes[msg.sender] - _stake;
+
+        if(stakes[msg.sender] == 0){
+            removeStakeholder(msg.sender);
+            slotsAvailable++;
+        }
+    }
 
     //***************************** rewards
 
