@@ -29,6 +29,12 @@ contract Staking is Ownable {
     uint slotsAvailable = 100;
 
     /**
+     * @notice The accumulated rewards for each stakeholder
+     */
+    mapping(address => uint256) internal rewards;
+
+
+    /**
         @notice determines if the address Ethereum is stakeHolder or not
         @param _address are you a stakeholder?
         @return bool whether you are stakeholder or not
@@ -121,19 +127,67 @@ contract Staking is Ownable {
         }
     }
 
-    //***************************** rewards
+    /**
+        @notice function to allow the stakeholder to check his rewards
+        @param _stakeholder to point out the stakeholder identity address
+    */
+    function rewardOf(address _stakeholder) public view returns(uint256) {
+        return rewards[_stakeholder];
+    }
+
+    /**
+        @notice function to aggregate rewards from all stakeholders
+        @return uint256 The aggregated rewards from all stakeholders
+    */
+    function totalRewards() public view returns(uint256){
+
+        uint256 totalRewards = 0;
+
+        for(uint256 i=0; i<stakeholders.length; i++){
+            totalRewards = totalRewards + rewards[stakeholders[i]];
+        }
+
+        return totalRewards;
+    }
+
+    /**    **** CHANGE THE FORMULA ******
+        @notice function to calculate rewards for each stakeholder
+        @param _stakeholder The stakeholder to calculate rewards for
+        @return uint256 The reward calculated by the formula
+    */
+    function calculateReward(address _stakeholder) public view returns(uint256){
+
+        return stakes[_stakeholder] * 60 / 100;
+
+    }
+
+    /**
+        @notice function to distribute rewards to all stakeholders
+    */
+    function distributeRewards() public onlyOwner {
+
+        for (uint256 i = 0; i < stakeholders.length; i++ ){
+            address stakeholder = stakeholders[i];
+            uint256 reward = calculateReward(stakeholder);
+            rewards[stakeholder] = rewards[stakeholder] + reward;
+        }
+    }
+
+    /**
+        @notice function to allow the stakeholder to withdraw his rewards
+    */
+    function withdrawReward() public {
+
+        uint256 reward = rewards[msg.sender];
+        //maybe the stakeholder will withdraw all his reward in one blow
+        if(rewards[msg.sender] == 0){
+            slotsAvailable++;
+        }
+
+        //rewards[msg.sender] = 0;
+        //_mint(msg.sender, reward);  NO!
 
 
-    //function to allow the stakeholder to check his rewards
-
-    //function to aggregate rewards from all stakeholders
-
-    //function to calculate rewards for each stakeholder
-
-    //function to distribute rewards to all stakeholders
-
-    //function to allow the stakeholder to withdraw his rewards
-
-
+    }
 }
 
