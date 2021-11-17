@@ -20,11 +20,4 @@ abstract contract StakeCoin is ERC20, Ownable {
 
         _mint(_owner, _initialSupply);
     }
-
-
-
-
-
-
-
 }
