@@ -20,15 +20,16 @@ contract Staking is Ownable {
      * @notice this structure contains two attributes the amount staked and when it's staked
      *         which are useful for the calculation of the reward
      */
-    struct stake{
+    struct Stake{
         uint amount;
         uint dateStaked;
     }
 
     /**
-     * @notice historyStake connects the address of a stakeholder and a specific token one to an array of stake type
+     * @notice historyStake connects the address of a stakeholder and a specific token one to an
+     *         array of stake type
      */
-    mapping (address => mapping(address => stake[])) public historyStake;
+    mapping (address => mapping(address => Stake[])) public historyStake;
 
     /**
      * @notice to know who are all the stakeholders
@@ -41,8 +42,11 @@ contract Staking is Ownable {
     uint slotsAvailable = 100;
 
     //reason to tell
-    //IERC20 private ERC20Address;
-    ERC20 private ERC20Address;
+    //IERC20 private IERC20Address;
+    //ERC20 private ERC20Address;
+    //StakeCoin private stakeCoinAddress;
+    StakeCoin private stakeCoin;
+
 
     /**
      * @notice The accumulated rewards for each stakeholder
@@ -60,23 +64,18 @@ contract Staking is Ownable {
     address public ownerOfContract;
 
     /**
-     *  @notice
-     */
-    //address[] public addresses;
-
-    /**
      *  @notice list of the events used
      */
     event StakeholderAdded(address stakeholderAddress);         //admin modifier onlyOwner
     event StakeholderRemoved(address stakeholderAddress); //admin modifier onlyOwner
-    event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);   //admin & user
-    event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);     //admin & user
-    event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress); //admin & user
-    event RewardsDistributed(address stakeholderAddress, address tokenAddress);    //admin & user
-    event RewardWithdrawn(address stakeholderAddress, address tokenAddress);       //admin & user
+    event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);   //admin & user modifier
+    event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);     //admin & user modifier
+    event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress); //admin & user modifier
+    event RewardsDistributed(address stakeholderAddress, address tokenAddress);    //admin & user modifier
+    event RewardWithdrawn(address stakeholderAddress, address tokenAddress);       //admin & user modifier
 
     /**
-        @notice modifier to check if the current address is a stakeholder/admin or not
+        @notice modifier to check if the current address is a stakeholder/admin one or not
     */
     modifier onlyStakeholderOrOwnerOfContract(address _address) {
         (bool stakeholderFlag, uint256 i) = isStakeholder(_address);
@@ -86,20 +85,33 @@ contract Staking is Ownable {
 
     /**
         @notice to deploy ERC20 token
-        @param _ERC20Address address of the token to deploy
+        @param _stakeCoin address of the token to deploy
     */
-    constructor(address _ERC20Address) {
+    /*constructor(address _ERC20Address) {
         require(_ERC20Address != address(0));
         ownerOfContract = msg.sender;
-        //ERC20Address = IERC20(_ERC20Address);
         ERC20Address = ERC20(_ERC20Address);
+        //ERC20Address = IERC20(_ERC20Address);
+        //ERC20Address = ERC20(_ERC20Address,60000000000000000000000000000);
+    }*/
+
+    /*
+    constructor(address _stakeCoinAddress) {
+        require(_stakeCoinAddress != address(0));
+        ownerOfContract = msg.sender;
+        stakeCoinAddress = StakeCoin(_stakeCoinAddress);
+    }
+    */
+
+    constructor(StakeCoin _stakeCoin) {
+        ownerOfContract = msg.sender;
+        stakeCoin = _stakeCoin;
     }
 
     //======== Helper functions ========
 
     /**
-     *   title: getAddresses
-     *   @notice gives the different addresses of the stakeholders
+     *   @notice gives the list of the addresses of the stakeholders
      *   @return list of addresses corresponding to the stakeholders
      */
     function getStakeholders() public view returns(address[] memory){
@@ -170,34 +182,33 @@ contract Staking is Ownable {
             stakeholders[s] = stakeholders[stakeholders.length - 1];
             stakeholders.pop();
         }
-
         emit StakeholderRemoved(_stakeholder);
-
     }
 
     /**
-        @notice get the amount of stake of a X StakeHolder
+        @notice A method to retrieve the array of stake for a stakeholder and a token given.
         @param _addressStakeHolder the address of the stakeHolder to put in order to get the stake
         @param _tokenAddress We get the stake related to a specific tokenAddress
         @return The sum in wei
         <!> it works with Remix!
     */
-    function stakeOf(address _addressStakeHolder, address _tokenAddress) public view returns (uint256,uint256){
+    function stakeOf(address _addressStakeHolder, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public view returns(Stake[] memory){
 
-        return(stakesAmount[_addressStakeHolder][_tokenAddress], stakesTimestamp[_addressStakeHolder][_tokenAddress]);
+        return(historyStake[_addressStakeHolder][_tokenAddress]);
+
     }
 
     /**
-        @notice aggregates all the stakes of all stakeholders
-        @param _tokenAddress We sum the stakes for this token
-        @return uint256 The sum of the stakes from all stakeholders
+        @notice aggregates all the amounts staked of all stakeholders for a given token
+        @param _tokenAddress We sum the staked amounts for this token
+        @return uint256 The sum of the staked amounts from all stakeholders
         <!> it works with Remix!
     */
     function sumOfStakes(address _tokenAddress) public view returns(uint256){
 
         uint256 sumStakes = 0;
         for(uint256 i=0; i < stakeholders.length; i += 1){
-            sumStakes = sumStakes + stakesAmount[stakeholders[i]][_tokenAddress];
+            sumStakes = sumStakes + historyStake[stakeholders[i]][_tokenAddress][i].amount;
         }
 
         return sumStakes;
@@ -235,18 +246,10 @@ contract Staking is Ownable {
         <!> it works with Remix!
     */
     function removeStake(uint256 _stake, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public{
-        /*
-        stakesAmount[msg.sender][_tokenAddress] -= _stake;
 
-        if(stakesAmount[msg.sender][_tokenAddress] == 0){
-            removeStakeholder(msg.sender);
-            slotsAvailable++;
-        }
-        */
+        historyStake[msg.sender][_tokenAddress].pop();
 
-        historyStake[msg.sender][_tokenAddress].pop(Stake(_stake, block.timestamp));
-
-        if(stakesAmount[msg.sender][_tokenAddress].length == 0){
+        if(historyStake[msg.sender][_tokenAddress].length == 0){
             removeStakeholder(msg.sender);
             slotsAvailable++;
         }
@@ -288,42 +291,11 @@ contract Staking is Ownable {
 
         uint reward;
 
-        /*
-        uint now = block.timestamp;
-        //Rate - 5%
-        uint rate = 5;
-        //Dt
-        uint dt = now - stakesTimestamp[_stakeholder][_tokenAddress];
-        //Perodicity - 1 rate / jour
-        uint perio = dt / 1 days;
-        //StakeAmount
-        uint reward = stakesAmount[_stakeholder][_tokenAddress] * rate / 100 * perio;*/
-
-        //simple case
-        //uint reward = stakesAmount[_stakeholder][_tokenAddress] * 5 / 100 *  ((block.timestamp - stakesTimestamp[_stakeholder][_tokenAddress]) / 1 days);
-
-        /*
-
-        complex case - for two successive stakes, the previous calculation doesn't work!
-        reward = 2 instead reward = 3
-        */
-
-
-
-        //methode 2:
-        /*for (uint256 i = 0; i < listOfStakesAmount.length; i++) {
-            reward = reward +
-                stakesAmount[_stakeholder][_tokenAddress] * 5 / 100 *
-                ((block.timestamp - stakesTimestamp[_stakeholder][_tokenAddress]) / 1 days);
-        }
-        */
-
         for (uint256 i = 0; i < historyStake[_stakeholder][_tokenAddress].length; i++) {
             reward = reward +
-                historyStake[_stakeholder][_tokenAddress].amount * 5 / 100 *
-                ((block.timestamp - historyStake[_stakeholder][_tokenAddress].dateStaked) / 1 days);
+                historyStake[_stakeholder][_tokenAddress][i].amount * 5 / 100 *
+                ((block.timestamp - historyStake[_stakeholder][_tokenAddress][i].dateStaked) / 1 days);
         }
-
 
         emit RewardCalculated(_stakeholder, reward, _tokenAddress);
         return reward;
@@ -331,7 +303,7 @@ contract Staking is Ownable {
 
     /**
         @notice function to distribute rewards to all stakeholders
-        @param _tokenAddress we will distribute the rewards associated to this reward
+        @param _tokenAddress we will distribute the rewards associated to this tokenAddress
     */
     function distributeRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public onlyOwner {
 
@@ -348,13 +320,10 @@ contract Staking is Ownable {
         @notice function for user to claim rewards
         @param _tokenAddress address of the token to get my reward
     */
-    function claimRewards(address _tokenAddress) public {           //public onlyStakeholder
+    function claimRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
 
-        //TODO
-        uint256 reward = calculateReward(msg.sender, _tokenAddress);
-        //rewards[stakeholder] = rewards[msg.sender] + reward;
+        uint256 reward = calculateReward(msg.sender, _tokenAddress) + rewards[msg.sender];
         rewards[msg.sender] = rewards[msg.sender] + reward;   //Is it that?
-
     }
 
     /**
@@ -363,11 +332,13 @@ contract Staking is Ownable {
         @param _tokenAddress token associated to this reward asked
     */
     function withdrawReward(address _stakeholderAddress, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
-        require(rewards[msg.sender] == 0);
+        require(rewards[msg.sender] > 0);
 
-        uint256 reward = rewards[msg.sender];
+        uint256 reward = rewards[_stakeholderAddress];
         //maybe the stakeholder will withdraw all his reward in one blow. Evidence: no argument in the signature of
         //the function
+
+        //reward = calculateReward(msg.sender, _tokenAddress) + rewards[msg.sender];
 
         //ERC20Address._mint(msg.sender, reward);
 

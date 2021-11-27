@@ -9,7 +9,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
     @author Alex
     @notice Creates a basic ERC20 staking token with incentive distribution
 */
-abstract contract StakeCoin is ERC20, Ownable {
+contract StakeCoin is ERC20, Ownable {
+
+
 
     /**
         @notice the constructor for the Staking token
