@@ -12,7 +12,6 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
     @title Staking
     @author Alex
     @notice allows to deposit tokens and invests in a business
-
 */
 contract Staking is Ownable {
 
@@ -41,12 +40,10 @@ contract Staking is Ownable {
      */
     uint slotsAvailable = 100;
 
-    //reason to tell
-    //IERC20 private IERC20Address;
-    //ERC20 private ERC20Address;
-    //StakeCoin private stakeCoinAddress;
-    StakeCoin private stakeCoin;
-
+    /**
+     * @notice We will use stakeCoinToken for the business functions to mint for example
+     */
+    StakeCoin private stakeCoinToken;
 
     /**
      * @notice The accumulated rewards for each stakeholder
@@ -63,16 +60,26 @@ contract Staking is Ownable {
      */
     address public ownerOfContract;
 
+    //the variable is it still useful to keep? I've to check again pls!
+    uint reward;
+
     /**
      *  @notice list of the events used
      */
-    event StakeholderAdded(address stakeholderAddress);         //admin modifier onlyOwner
-    event StakeholderRemoved(address stakeholderAddress); //admin modifier onlyOwner
-    event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);   //admin & user modifier
-    event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);     //admin & user modifier
-    event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress); //admin & user modifier
-    event RewardsDistributed(address stakeholderAddress, address tokenAddress);    //admin & user modifier
-    event RewardWithdrawn(address stakeholderAddress, address tokenAddress);       //admin & user modifier
+    //admin modifier onlyOwner
+    event StakeholderAdded(address stakeholderAddress);
+    //admin modifier onlyOwner
+    event StakeholderRemoved(address stakeholderAddress);
+    //admin & user modifier
+    event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
+    //admin & user modifier
+    event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
+    //admin & user modifier
+    event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress);
+    //admin & user modifier
+    event RewardsDistributed(address stakeholderAddress, address tokenAddress);
+    //admin & user modifier
+    event RewardWithdrawn(address stakeholderAddress, address tokenAddress);
 
     /**
         @notice modifier to check if the current address is a stakeholder/admin one or not
@@ -84,32 +91,19 @@ contract Staking is Ownable {
     }
 
     /**
-        @notice to deploy ERC20 token
-        @param _stakeCoin address of the token to deploy
-    */
-    /*constructor(address _ERC20Address) {
-        require(_ERC20Address != address(0));
-        ownerOfContract = msg.sender;
-        ERC20Address = ERC20(_ERC20Address);
-        //ERC20Address = IERC20(_ERC20Address);
-        //ERC20Address = ERC20(_ERC20Address,60000000000000000000000000000);
-    }*/
-
-    /*
-    constructor(address _stakeCoinAddress) {
-        require(_stakeCoinAddress != address(0));
-        ownerOfContract = msg.sender;
-        stakeCoinAddress = StakeCoin(_stakeCoinAddress);
-    }
-    */
-
+     *  @notice to deploy ERC20 token
+     *  @param _stakeCoin StakeCoin token to instantiate
+     */
     constructor(StakeCoin _stakeCoin) {
         ownerOfContract = msg.sender;
-        stakeCoin = _stakeCoin;
+        if (address(_stakeCoin) == address(0)){
+            stakeCoinToken = new StakeCoin(0);
+        }else{
+            stakeCoinToken = _stakeCoin;
+        }
     }
 
     //======== Helper functions ========
-
     /**
      *   @notice gives the list of the addresses of the stakeholders
      *   @return list of addresses corresponding to the stakeholders
@@ -227,13 +221,6 @@ contract Staking is Ownable {
             addStakeholder(msg.sender);
         }
 
-        //mapping : address => address => Stake[]
-
-        //Stake 1 : Alice // Token A // 10 à t0
-        // historyStake -> Alice // Token A // 10, t0
-        //Stake 2 : Alice // Token A // 20 à t1
-        // historyStake -> Alice // Token A // [10, t0], [20, t1]
-
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
@@ -289,7 +276,7 @@ contract Staking is Ownable {
     */
     function calculateReward(address _stakeholder, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public returns(uint256){
 
-        uint reward;
+        //uint reward;
 
         for (uint256 i = 0; i < historyStake[_stakeholder][_tokenAddress].length; i++) {
             reward = reward +
@@ -305,15 +292,21 @@ contract Staking is Ownable {
         @notice function to distribute rewards to all stakeholders
         @param _tokenAddress we will distribute the rewards associated to this tokenAddress
     */
-    function distributeRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public onlyOwner {
+    function distributeRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender)
+    public onlyOwner {
 
         for (uint256 i = 0; i < stakeholders.length; i++ ){
             address stakeholder = stakeholders[i];
             uint256 reward = calculateReward(stakeholder, _tokenAddress);
             rewards[stakeholder] = rewards[stakeholder] + reward;
+            //Conversion reward de _tokenAddress vers stakeCoinToken
+            //
+            stakeCoinToken.mint(address(this),rewards[stakeholder]);
+            stakeCoinToken.transfer(stakeholder, rewards[stakeholder]);
+
         }
 
-        emit RewardsDistributed(msg.sender, _tokenAddress);         //to check
+        emit RewardsDistributed(msg.sender, _tokenAddress);
     }
 
     /**
@@ -323,7 +316,7 @@ contract Staking is Ownable {
     function claimRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
 
         uint256 reward = calculateReward(msg.sender, _tokenAddress) + rewards[msg.sender];
-        rewards[msg.sender] = rewards[msg.sender] + reward;   //Is it that?
+        rewards[msg.sender] = rewards[msg.sender] + reward;
     }
 
     /**
@@ -345,7 +338,7 @@ contract Staking is Ownable {
         //to put the rewards at 0
         rewards[msg.sender] = 0;
 
-        emit RewardWithdrawn(_stakeholderAddress, _tokenAddress);       //to check
+        emit RewardWithdrawn(_stakeholderAddress, _tokenAddress);
     }
 }
 

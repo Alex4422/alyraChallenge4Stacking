@@ -8,18 +8,24 @@ contract("Staking", accounts => {
     const owner = accounts[0];
     const stakeholder1 = accounts[1];
     const stakeholder2 = accounts[2];
-    const _ERC20Address = accounts[3];
+    const stakeCoinAddress = accounts[3];
     const amount1 = new BN(10);
     const amount2 = new BN(20);
     const initialSupply = new BN(6000000);
+
 
     /**
      * Clean each time the instance of the smart contract
      */
     beforeEach(async function () {
 
-        this.stakingInstance = await Staking.new(_ERC20Address ,{from: owner});
-        //this.stakeCoinInstance = await StakeCoin.new({from: owner}, 6000000000000000000);
+        //Is it correct to write this? {from: owner}
+        this.stakingInstance = await Staking.new(stakeCoinAddress);
+        //this.stakingInstance = await Staking.new({from: owner}, stakeCoinAddress);
+        this.stakeCoinInstance = await StakeCoin.new(1e8);
+
+
+        //this.stakingInstance = await Staking.new(_ERC20Address ,{from: owner});
         //this.stakeCoinInstance = await StakeCoin.new(initialSupply, {from: owner});
     });
 
@@ -105,7 +111,7 @@ contract("Staking", accounts => {
      */
     describe('C. adding stakes', function() {
 
-        xit('1. Test of the stake creation', async function() {
+        it('1. Test of the stake creation', async function() {
             // We transfer some tokens to stakeholder1
             //await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
@@ -137,7 +143,7 @@ contract("Staking", accounts => {
          */
         describe('E. Calculating of the reward', function() {
 
-            xit(' . Sends an event when the reward is calculated', async function() {
+            it(' . Sends an event when the reward is calculated', async function() {
 
                 //expectEvent( await this.stakingInstance.calculateReward()...)
             })

@@ -11,15 +11,23 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 */
 contract StakeCoin is ERC20, Ownable {
 
-
+    /**
+        @notice the constructor for the Staking coin token
+        @dev the owner is the admin of the interface
+        @param initialStakeCoinSupply The amount of initial tokens to mint on construction
+    */
+    constructor(uint initialStakeCoinSupply) ERC20("Stake Coin Token", "STC") {
+        _mint(owner(), initialStakeCoinSupply);
+    }
 
     /**
-        @notice the constructor for the Staking token
-        @param _owner The address to receive all tokens
-        @param _initialSupply The amount of initial tokens to mint on construction
-    */
-    constructor(address _owner, uint256 _initialSupply) {
-
-        _mint(_owner, _initialSupply);
+     *   @notice produces some tokens for a smart contract
+     *   @param to address of the recipient
+     *   @param value amount of tokens to produce
+     *   @return boolean did we produce some tokens?
+     */
+    function mint(address to, uint256 value) public onlyOwner returns (bool) {
+        _mint(to, value);
+        return true;
     }
 }

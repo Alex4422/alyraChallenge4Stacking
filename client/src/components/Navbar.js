@@ -11,7 +11,7 @@ class Navbar extends Component {
 
                 <ul className='navbar-nav px-3'>
                    <li className='text-nowrap d-none nav-item d-sm-none d-sm-block'>
-                       <small style={{color:'white'}}>ADDRESS:
+                       <small style={{color:'white'}}>ADDRESS: {this.props.account}
 
                        </small>
                    </li>

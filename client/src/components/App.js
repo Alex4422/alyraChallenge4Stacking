@@ -59,6 +59,15 @@ class App extends Component {
         this.setState({ storageValue: response });
     };
 
+    constructor(props) {
+        super(props);
+        this.state = { //or account?
+            accounts: '0x0'
+        }
+    }
+
+
+
     render() {
         if (!this.state.web3) {
             return <div>Loading Web3, accounts, and contract...</div>;
@@ -66,7 +75,7 @@ class App extends Component {
         return (
             <div className="App">
 
-                <Navbar />
+                <Navbar  account={this.state.accounts}/>
 
                 <h1>Hello!</h1>
 
