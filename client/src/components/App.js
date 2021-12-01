@@ -5,12 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Navbar from './Navbar'
 
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Table from 'react-bootstrap/Table';
-import Staking from "../contracts/Staking.json";
+
 
 
 import "./App.css";
