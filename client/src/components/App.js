@@ -3,8 +3,16 @@ import SimpleStorageContract from "../contracts/SimpleStorage.json";
 import getWeb3 from "../getWeb3";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Navbar from './Navbar'
+/*
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Table from 'react-bootstrap/Table';
+*/
 
+import Navbar from './Navbar';
+import Main from './Main.js';
 
 
 
@@ -68,11 +76,25 @@ class App extends Component {
             return <div>Loading Web3, accounts, and contract...</div>;
         }
         return (
-            <div className="App">
+            <div className="App" style={{position:'relative'}}>
 
                 <Navbar  account={this.state.accounts}/>
 
-                <h1>Hello!</h1>
+                    <div className='container-fluid mt-5'>
+                        <div className='row'>
+
+                            <main role='main' className='col-lg-12 ml-auto mr-auto' style={{maxWidth:'600px', minHeight:'100vm'}} >
+                                <div>
+
+                                    <Main/>
+
+                                </div>
+                            </main>
+
+                        </div>
+
+                    </div>
+
 
             </div>
         );
