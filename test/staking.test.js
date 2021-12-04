@@ -111,18 +111,18 @@ contract("Staking", accounts => {
      */
     describe('C. adding stakes', function() {
 
-        it('1. Test of the stake creation', async function() {
+        xit('9. Test of the stake creation', async function() {
             // We transfer some tokens to stakeholder1
-            //await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
+            await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
             //we use the balanceOf function of stakeCoinInstance to check that stakeholder1
             //has received the tokens and which corresponds to amount1
-            //const balance = await this.stakeCoinInstance.balanceOf(stakeholder1);
-            //expect(balance).to.equal(amount1);
+            const balance = await this.stakeCoinInstance.balanceOf(stakeholder1);
+            expect(balance).to.equal(amount1);
 
             // We stake the event 'StakeCreated' when stakeholder1 stakes
-            //expectEvent(await this.stakingInstance.createStake(amount1, {from: stakeholder1}),
-            //'StakeCreated', {stakeholderStake: amount1 });
+            expectEvent(await this.stakingInstance.createStake(amount1, {from: stakeholder1}),
+            'StakeCreated', {stakeholderStake: amount1 });
 
             // vérifier le montant staké (stakeOf)
 
@@ -134,6 +134,10 @@ contract("Staking", accounts => {
          */
         describe('D. removing stakes', function() {
 
+            xit('10. Test of the stake deletion', async function() {
+
+            });
+
 
         });
 
@@ -143,57 +147,35 @@ contract("Staking", accounts => {
          */
         describe('E. Calculating of the reward', function() {
 
-            it(' . Sends an event when the reward is calculated', async function() {
+            xit(' . Sends an event when the reward is calculated', async function() {
 
                 //expectEvent( await this.stakingInstance.calculateReward()...)
-            })
-        })
-
-    });
-
-
-})
-
-
-
-
-
-
-
-
-
-/*
-const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-
-let manyTokens = require("bignumber.js");
-
-contract('StakeCoin', (accounts) => {
-
-    let stakeCoin;
-
-    //const manyTokens = BigNumber(10).pow(18).multipliedBy(1000);
-    manyTokens = new web3.utils.BN(2000);
-
-    const owner = accounts[0];
-    const stakeholder = accounts[1];
-
-    before(async () => {
-
-        stakeCoin = await StakeCoin.deployed();
-
-    });
-
-    describe('Staking', () => {
-        beforeEach(async () => {
-            stakeCoin = await StakeCoin.new(
-                owner,
-                manyTokens.toString(10)
-            );
+            });
         });
+
+
+        /**
+         * Zone of the management of the reward
+         */
+        describe('F. Reward management zone', function() {
+
+            xit(' . Rewards can only be distributed by the contract owner', async function () {
+
+                //expectEvent( await this.stakingInstance.___()...)
+            });
+
+            xit(' . Rewards are distributed.', async function () {
+
+                //expectEvent( await this.stakingInstance.___()...)
+            });
+
+            xit(' . Rewards can be withdrawn', async function () {
+
+                //expectEvent( await this.stakingInstance.___()...)
+            });
+
+
+        });
+
     });
-
-});
-
-
-
- */
+})

@@ -60,8 +60,14 @@ contract Staking is Ownable {
      */
     address public ownerOfContract;
 
-    //the variable is it still useful to keep? I've to check again pls!
-    uint reward;
+    //the variable is it still useful to keep? I've to test again pls! only in global
+    //uint rewardQuantity;
+
+    /**
+     * @notice priceFeed consumes price data with AggregatorV3Interface
+     */
+    AggregatorV3Interface internal priceFeed;
+
 
     /**
      *  @notice list of the events used
@@ -79,7 +85,7 @@ contract Staking is Ownable {
     //admin & user modifier
     event RewardsDistributed(address stakeholderAddress, address tokenAddress);
     //admin & user modifier
-    event RewardWithdrawn(address stakeholderAddress, address tokenAddress);
+    event RewardWithdrawn(address stakeholderAddress);
 
     /**
         @notice modifier to check if the current address is a stakeholder/admin one or not
@@ -101,6 +107,7 @@ contract Staking is Ownable {
         }else{
             stakeCoinToken = _stakeCoin;
         }
+        priceFeed = AggregatorV3Interface(0x3Af8C569ab77af5230596Acf0E8c2F9351d24C38);
     }
 
     //======== Helper functions ========
@@ -114,14 +121,11 @@ contract Staking is Ownable {
 
     /**
         @notice return the current market value of the locked-in asset
-        @param conversionPriceAddress where to find the price to convert
         @return price the current market value
     */
-    function getPrice(address conversionPriceAddress) public view returns (int) {
+    function getPrice() public view returns (int) {
 
-        AggregatorV3Interface conversionPrice = AggregatorV3Interface(conversionPriceAddress);
-
-        (uint80 roundID, int256 price, uint256 startedAt, uint256 timeStamp, uint80 answeredInRound) = conversionPrice.latestRoundData();
+        (uint80 roundID, int256 price, uint256 startedAt, uint256 timeStamp, uint80 answeredInRound) = priceFeed.latestRoundData();
 
         return price;
 
@@ -180,11 +184,11 @@ contract Staking is Ownable {
     }
 
     /**
-        @notice A method to retrieve the array of stake for a stakeholder and a token given.
+        @notice A method to retrieve the array of stake for a stakeholder with a token given in argument.
         @param _addressStakeHolder the address of the stakeHolder to put in order to get the stake
         @param _tokenAddress We get the stake related to a specific tokenAddress
         @return The sum in wei
-        <!> it works with Remix!
+        <!> TO TEST AGAIN!
     */
     function stakeOf(address _addressStakeHolder, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public view returns(Stake[] memory){
 
@@ -196,7 +200,7 @@ contract Staking is Ownable {
         @notice aggregates all the amounts staked of all stakeholders for a given token
         @param _tokenAddress We sum the staked amounts for this token
         @return uint256 The sum of the staked amounts from all stakeholders
-        <!> it works with Remix!
+        <!> TO TEST AGAIN!
     */
     function sumOfStakes(address _tokenAddress) public view returns(uint256){
 
@@ -216,6 +220,10 @@ contract Staking is Ownable {
     */
     function createStake(uint256 _stake, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
 
+        //Is it a false address 0x0 and the sc is well deployed? tokenAddress != address(0)
+        require(_tokenAddress != address(0));
+        //Is it a erc20?
+        require(IERC20(_tokenAddress).totalSupply() > 0);
         if (historyStake[msg.sender][_tokenAddress].length > 0){
             slotsAvailable--;
             addStakeholder(msg.sender);
@@ -234,6 +242,11 @@ contract Staking is Ownable {
     */
     function removeStake(uint256 _stake, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public{
 
+        //Is it a false address 0x0 and the sc is well deployed? tokenAddress != address(0)
+        require(_tokenAddress != address(0));
+        //Is it a erc20?
+        require(IERC20(_tokenAddress).totalSupply() > 0);
+
         historyStake[msg.sender][_tokenAddress].pop();
 
         if(historyStake[msg.sender][_tokenAddress].length == 0){
@@ -248,6 +261,7 @@ contract Staking is Ownable {
         @notice function to allow the stakeholder to check his rewards
         @param _stakeholder to point out the stakeholder identity address
         @return We get these rewards for this stakeholder
+        <!> TO TEST AGAIN!
     */
     function rewardOf(address _stakeholder) public view returns(uint256) {
         return rewards[_stakeholder];
@@ -256,6 +270,7 @@ contract Staking is Ownable {
     /**
         @notice function to aggregate rewards from all stakeholders
         @return uint256 The aggregated rewards from all stakeholders
+        <!> TO TEST AGAIN!
     */
     function getTotalRewards() public view returns(uint256){
 
@@ -273,15 +288,17 @@ contract Staking is Ownable {
         @param _stakeholder We will calculate the reward for this stakeholder
         @param _tokenAddress We will calculate the reward related to this token
         @return uint256 The reward calculated by the formula
+        <!> it works with Remix!
     */
     function calculateReward(address _stakeholder, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public returns(uint256){
 
-        //uint reward;
+        uint reward = 0;
 
         for (uint256 i = 0; i < historyStake[_stakeholder][_tokenAddress].length; i++) {
             reward = reward +
-                historyStake[_stakeholder][_tokenAddress][i].amount * 5 / 100 *
-                ((block.timestamp - historyStake[_stakeholder][_tokenAddress][i].dateStaked) / 1 days);
+            historyStake[_stakeholder][_tokenAddress][i].amount * 5 / 100 *
+            //for the test in remix, change 1 days to 1 second otherwise it's too long to test
+            ((block.timestamp - historyStake[_stakeholder][_tokenAddress][i].dateStaked) / 1 days);
         }
 
         emit RewardCalculated(_stakeholder, reward, _tokenAddress);
@@ -291,16 +308,21 @@ contract Staking is Ownable {
     /**
         @notice function to distribute rewards to all stakeholders
         @param _tokenAddress we will distribute the rewards associated to this tokenAddress
+        <!> TO TEST AGAIN!
     */
     function distributeRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender)
     public onlyOwner {
 
+        uint rewardQuantity;
         for (uint256 i = 0; i < stakeholders.length; i++ ){
             address stakeholder = stakeholders[i];
-            uint256 reward = calculateReward(stakeholder, _tokenAddress);
-            rewards[stakeholder] = rewards[stakeholder] + reward;
+            rewardQuantity = calculateReward(stakeholder, _tokenAddress);
+            rewards[stakeholder] = rewards[stakeholder] + rewardQuantity;
+
             //Conversion reward de _tokenAddress vers stakeCoinToken
-            //
+            int256 tokenPrice = getPrice(); // unit price
+            uint rewardsToDistribute = uint(tokenPrice) * rewardQuantity; // if 1 STC = 1 ETH
+
             stakeCoinToken.mint(address(this),rewards[stakeholder]);
             stakeCoinToken.transfer(stakeholder, rewards[stakeholder]);
 
@@ -310,35 +332,21 @@ contract Staking is Ownable {
     }
 
     /**
-        @notice function for user to claim rewards
-        @param _tokenAddress address of the token to get my reward
-    */
-    function claimRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
-
-        uint256 reward = calculateReward(msg.sender, _tokenAddress) + rewards[msg.sender];
-        rewards[msg.sender] = rewards[msg.sender] + reward;
-    }
-
-    /**
         @notice function to allow the stakeholder to withdraw his rewards
-        @param _stakeholderAddress address of the stakeholder who wants to withdraw his rewards
-        @param _tokenAddress token associated to this reward asked
     */
-    function withdrawReward(address _stakeholderAddress, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
+    //argument in the function or not? (address _tokenAddress)
+    function withdrawReward() onlyStakeholderOrOwnerOfContract(msg.sender) public {
+
+
         require(rewards[msg.sender] > 0);
+        uint reward = rewards[msg.sender];
 
-        uint256 reward = rewards[_stakeholderAddress];
-        //maybe the stakeholder will withdraw all his reward in one blow. Evidence: no argument in the signature of
-        //the function
-
-        //reward = calculateReward(msg.sender, _tokenAddress) + rewards[msg.sender];
-
-        //ERC20Address._mint(msg.sender, reward);
-
-        //to put the rewards at 0
         rewards[msg.sender] = 0;
+        //?
+        stakeCoinToken.mint(msg.sender,reward);
 
-        emit RewardWithdrawn(_stakeholderAddress, _tokenAddress);
+
+        emit RewardWithdrawn(msg.sender);
     }
 }
 

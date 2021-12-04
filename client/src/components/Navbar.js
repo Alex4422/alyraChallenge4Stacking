@@ -9,11 +9,12 @@ class Navbar extends Component {
                 <a className='navbar-brand col-sm-3 col-md-2 mr-0'
                    style={{color:'white'}}>DAPP Staking exercise</a>
 
+                {/*reexplain this pls:  CURRENT ADDRESS: {this.props.account} not {this.props.account[0]}? */}
+                <small  className='row-cols-xl-6' style={{color:'white'}}>CURRENT ADDRESS: {this.props.account} </small>
+
                 <ul className='navbar-nav px-3'>
                    <li className='text-nowrap d-none nav-item d-sm-none d-sm-block'>
-                       <small style={{color:'white'}}>ADDRESS: {this.props.account}
 
-                       </small>
                    </li>
                 </ul>
 
