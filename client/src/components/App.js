@@ -18,6 +18,7 @@ import Main from './Main.js';
 
 
 import "./App.css";
+import StakeholdersManagement from "./StakeholdersManagement";
 
 class App extends Component {
     state = {web3: null, accounts: null, contract: null };
@@ -108,6 +109,16 @@ class App extends Component {
         }
     }
 
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+    startStakeUnstakeSession = async() => {
+
+
+    }
+
+
 
 
     render() {
@@ -115,17 +126,31 @@ class App extends Component {
             return <div>Loading Web3, accounts, and contract...</div>;
         }
         return (
+
+
             <div className="App" style={{position:'relative'}}>
+
 
                 <Navbar  account={this.state.accounts}/>
 
                     <div className='container-fluid mt-5'>
+
+                        {/*style to change in className!!!!!!!!!*/}
+                        <div  style={{marginTop: '10rem'}}>
+                            <StakeholdersManagement/>
+                        </div>
+
                         <div className='row justify-content-center'>
 
                             <main role='main' className='col-lg-12 ml-auto mr-auto' style={{maxWidth:'600px', minHeight:'100vm'}} >
+
+
                                 <div>
 
-                                    <Main/>
+                                    {/*<Main/>*/}
+
+
+
 
                                 </div>
                             </main>

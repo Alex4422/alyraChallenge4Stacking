@@ -1,11 +1,23 @@
 import React, {Component} from 'react';
 
+
+import StakeholdersManagement from './StakeholdersManagement.js';
+
 class Main extends Component {
 
     render() {
         return (
 
             <div id='content' className='mt-3' >
+
+
+
+                ddd
+
+
+
+
+
                 <table className='table text-muted text-center'>
                     <thead>
                         <tr style={{color:'white'}}>
@@ -24,12 +36,6 @@ class Main extends Component {
                 <div className='card mb-2' style={{opacity:'.9'}}>
                     <form className='mb-3'>
                         <div style={{borderSpacing:'0 1em'}}>
-
-                            {/*
-                            <span className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Balance:
-                            </span>
-                            */}
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
                                 Balance:

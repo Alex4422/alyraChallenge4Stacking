@@ -178,6 +178,7 @@ contract Staking is Ownable {
 
         require(_isStakeholder,'this address (= stakeholder) is already removed');
 
+        //remove the if, test before to be sure!
         if (_isStakeholder) {
             stakeholders[s] = stakeholders[stakeholders.length - 1];
             stakeholders.pop();
