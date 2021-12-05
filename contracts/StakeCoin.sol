@@ -15,6 +15,7 @@ contract StakeCoin is ERC20, Ownable {
         @notice the constructor for the Staking coin token
         @dev the owner is the admin of the interface
         @param initialStakeCoinSupply The amount of initial tokens to mint on construction
+        <!> it works with Remix!
     */
     constructor(uint initialStakeCoinSupply) ERC20("Stake Coin Token", "STC") {
         _mint(owner(), initialStakeCoinSupply);
@@ -25,6 +26,7 @@ contract StakeCoin is ERC20, Ownable {
      *   @param to address of the recipient
      *   @param value amount of tokens to produce
      *   @return boolean did we produce some tokens?
+     *  <!> it works with Remix!
      */
     function mint(address to, uint256 value) public onlyOwner returns (bool) {
         _mint(to, value);

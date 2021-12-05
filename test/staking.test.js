@@ -108,7 +108,7 @@ contract("Staking", accounts => {
 
     /**
      * Zone of the management (creation) of the stakes
-     */
+     */     //to test
     describe('C. adding stakes', function() {
 
         xit('9. Test of the stake creation', async function() {
@@ -131,7 +131,7 @@ contract("Staking", accounts => {
 
         /**
          * Zone of the management (removing) of the stakes
-         */
+         */ //How is the process?
         describe('D. removing stakes', function() {
 
             xit('10. Test of the stake deletion', async function() {

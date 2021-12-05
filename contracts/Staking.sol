@@ -147,6 +147,8 @@ contract Staking is Ownable {
         return (false, 0);
     }
 
+
+
     /**
         @notice allows to register a stakeholder in the dynamic array
         @param _stakeholder a new stakeholder to add
@@ -348,5 +350,11 @@ contract Staking is Ownable {
 
         emit RewardWithdrawn(msg.sender);
     }
+
+    fallback() external payable{
+
+    }
+
+
 }
 

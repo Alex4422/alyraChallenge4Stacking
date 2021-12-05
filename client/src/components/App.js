@@ -120,7 +120,7 @@ class App extends Component {
                 <Navbar  account={this.state.accounts}/>
 
                     <div className='container-fluid mt-5'>
-                        <div className='row'>
+                        <div className='row justify-content-center'>
 
                             <main role='main' className='col-lg-12 ml-auto mr-auto' style={{maxWidth:'600px', minHeight:'100vm'}} >
                                 <div>
