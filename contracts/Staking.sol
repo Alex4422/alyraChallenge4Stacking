@@ -33,7 +33,7 @@ contract Staking is Ownable {
     /**
      * @notice to know who are all the stakeholders
      */
-    address[] internal stakeholders;
+    address[] public stakeholders;
 
     /**
      * @notice Number of staking slot
@@ -60,14 +60,10 @@ contract Staking is Ownable {
      */
     address public ownerOfContract;
 
-    //the variable is it still useful to keep? I've to test again pls! only in global
-    //uint rewardQuantity;
-
     /**
      * @notice priceFeed consumes price data with AggregatorV3Interface
      */
     AggregatorV3Interface internal priceFeed;
-
 
     /**
      *  @notice list of the events used
@@ -79,22 +75,16 @@ contract Staking is Ownable {
     //admin & user modifier
     event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
     //admin & user modifier
-    event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
+    //event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
+    event StakeRemoved(address stakeholderAddress, address tokenAddress);
+
+
     //admin & user modifier
     event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress);
     //admin & user modifier
     event RewardsDistributed(address stakeholderAddress, address tokenAddress);
     //admin & user modifier
     event RewardWithdrawn(address stakeholderAddress);
-
-    /**
-        @notice modifier to check if the current address is a stakeholder/admin one or not
-    */
-    modifier onlyStakeholderOrOwnerOfContract(address _address) {
-        (bool stakeholderFlag, uint256 i) = isStakeholder(_address);
-        require(stakeholderFlag == true || msg.sender == ownerOfContract, "the address is not a stakeholder/admin!");
-        _;
-    }
 
     /**
      *  @notice to deploy ERC20 token
@@ -109,6 +99,16 @@ contract Staking is Ownable {
         }
         priceFeed = AggregatorV3Interface(0x3Af8C569ab77af5230596Acf0E8c2F9351d24C38);
     }
+
+    /**
+        @notice modifier to check if the current address is a stakeholder/admin one or not
+    */
+    modifier onlyStakeholderOrOwnerOfContract(address _address) {
+        (bool stakeholderFlag, uint256 i) = isStakeholder(_address);
+        require(stakeholderFlag == true || msg.sender == ownerOfContract, "the address is not a stakeholder/admin!");
+        _;
+    }
+
 
     //======== Helper functions ========
     /**
@@ -147,8 +147,6 @@ contract Staking is Ownable {
         return (false, 0);
     }
 
-
-
     /**
         @notice allows to register a stakeholder in the dynamic array
         @param _stakeholder a new stakeholder to add
@@ -158,9 +156,6 @@ contract Staking is Ownable {
 
         (bool _isStakeholder, ) = isStakeholder(_stakeholder);
 
-        //What is the best? if or require. I think "require(...)" it is the best
-        //in order to make a test with chai
-        //if(!_isStakeholder) stakeholders.push(_stakeholder);
         require(!_isStakeholder,'this address is already a stakeholder');
         stakeholders.push(_stakeholder);
 
@@ -178,11 +173,9 @@ contract Staking is Ownable {
 
         require(_isStakeholder,'this address (= stakeholder) is already removed');
 
-        //remove the if, test before to be sure!
-        if (_isStakeholder) {
-            stakeholders[s] = stakeholders[stakeholders.length - 1];
-            stakeholders.pop();
-        }
+        stakeholders[s] = stakeholders[stakeholders.length - 1];
+        stakeholders.pop();
+
         emit StakeholderRemoved(_stakeholder);
     }
 
@@ -224,40 +217,46 @@ contract Staking is Ownable {
     function createStake(uint256 _stake, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
 
         //Is it a false address 0x0 and the sc is well deployed? tokenAddress != address(0)
-        require(_tokenAddress != address(0));
+        //require(_tokenAddress != address(0),'This token address is false');
+
         //Is it a erc20?
-        require(IERC20(_tokenAddress).totalSupply() > 0);
-        if (historyStake[msg.sender][_tokenAddress].length > 0){
-            slotsAvailable--;
-            addStakeholder(msg.sender);
-        }
+        require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
+
 
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
+
+        // transfert des tokens sur _tokenAddress de msg.sender vers le contract du montant _stake
+        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
 
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
     }
 
     /**
         @notice a method for a stakeholder to remove a stake
-        @param _stake The size of the stake to be removed
         @param _tokenAddress we are managing the stake related to this token
         <!> it works with Remix!
     */
-    function removeStake(uint256 _stake, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public{
+    function removeStake(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public{
 
-        //Is it a false address 0x0 and the sc is well deployed? tokenAddress != address(0)
-        require(_tokenAddress != address(0));
         //Is it a erc20?
         require(IERC20(_tokenAddress).totalSupply() > 0);
 
-        historyStake[msg.sender][_tokenAddress].pop();
+        //TODO
+        //calcul de la reward lié au token
+        //transfer du token reward vers msg.sender
 
-        if(historyStake[msg.sender][_tokenAddress].length == 0){
-            removeStakeholder(msg.sender);
-            slotsAvailable++;
-        }
+        //calcul du nombre de token staker
+        //uint stakedToken = historyStake[msg.sender][_tokenAddress][i].amount;
 
-        emit StakeRemoved(msg.sender, _stake, _tokenAddress);
+        //transferer ce montant de token vers msg.sender
+        //IERC20(_tokenAddress).transfer(msg.sender,_stake);
+        //IERC20(_tokenAddress).transfer(msg.sender,stakedToken);
+
+        //delete l'historique pour repartir à 0
+        delete historyStake[msg.sender][_tokenAddress];
+
+        //emit StakeRemoved(msg.sender, _stake, _tokenAddress);
+        emit StakeRemoved(msg.sender, _tokenAddress);
     }
 
     /**
@@ -301,7 +300,7 @@ contract Staking is Ownable {
             reward = reward +
             historyStake[_stakeholder][_tokenAddress][i].amount * 5 / 100 *
             //for the test in remix, change 1 days to 1 second otherwise it's too long to test
-            ((block.timestamp - historyStake[_stakeholder][_tokenAddress][i].dateStaked) / 1 days);
+            ((block.timestamp - historyStake[_stakeholder][_tokenAddress][i].dateStaked) / 1 seconds);
         }
 
         emit RewardCalculated(_stakeholder, reward, _tokenAddress);
@@ -323,8 +322,8 @@ contract Staking is Ownable {
             rewards[stakeholder] = rewards[stakeholder] + rewardQuantity;
 
             //Conversion reward de _tokenAddress vers stakeCoinToken
-            int256 tokenPrice = getPrice(); // unit price
-            uint rewardsToDistribute = uint(tokenPrice) * rewardQuantity; // if 1 STC = 1 ETH
+            int256 tokenPrice = getPrice(); // unit tokenPrice
+            uint rewardsToDistribute = rewardQuantity / uint(tokenPrice); // if 1 STC = 1 ETH
 
             stakeCoinToken.mint(address(this),rewards[stakeholder]);
             stakeCoinToken.transfer(stakeholder, rewards[stakeholder]);
@@ -337,25 +336,14 @@ contract Staking is Ownable {
     /**
         @notice function to allow the stakeholder to withdraw his rewards
     */
-    //argument in the function or not? (address _tokenAddress)
     function withdrawReward() onlyStakeholderOrOwnerOfContract(msg.sender) public {
 
-
-        require(rewards[msg.sender] > 0);
+        require(rewards[msg.sender] > 0, "No reward to withdraw");
         uint reward = rewards[msg.sender];
-
         rewards[msg.sender] = 0;
-        //?
         stakeCoinToken.mint(msg.sender,reward);
-
 
         emit RewardWithdrawn(msg.sender);
     }
-
-    fallback() external payable{
-
-    }
-
-
 }
 

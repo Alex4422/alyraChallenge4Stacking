@@ -1,5 +1,5 @@
-var StakeCoin = artifacts.require("./StakeCoin.sol");
-var Staking = artifacts.require("./Staking.sol");
+var StakeCoin = artifacts.require('./StakeCoin.sol');
+var Staking = artifacts.require('./Staking.sol');
 
 module.exports = async function (deployer) {
 

@@ -24,7 +24,6 @@ contract("Staking", accounts => {
         //this.stakingInstance = await Staking.new({from: owner}, stakeCoinAddress);
         this.stakeCoinInstance = await StakeCoin.new(1e8);
 
-
         //this.stakingInstance = await Staking.new(_ERC20Address ,{from: owner});
         //this.stakeCoinInstance = await StakeCoin.new(initialSupply, {from: owner});
     });
@@ -54,7 +53,7 @@ contract("Staking", accounts => {
                 'Ownable: caller is not the owner');
         });
 
-        it('4. reverts -- adding the stakeholder -- if this stakeholder (address) is already registered in the list', async function() {
+        it('4. reverts the operation -- adding the stakeholder -- if this stakeholder (address) is already registered in the list', async function() {
 
             await this.stakingInstance.addStakeholder(accounts[2], {from: owner});
             await expectRevert( this.stakingInstance.addStakeholder(accounts[2], {from: owner}),
@@ -75,14 +74,15 @@ contract("Staking", accounts => {
 
         });
 
-        xit('5. Removes a stakeholder', async function() {
+        it('5. Removes a stakeholder', async function() {
 
             await this.stakingInstance.removeStakeholder(stakeholder1, {from:owner});
             let stakeholdersAddresses = await this.stakingInstance.getStakeholders();
 
             //NO!
             //expect(stakeholdersAddresses[0]).to.equal(accounts[1]);
-            expect(stakeholdersAddresses[0]).to.equal(address[0]);
+            //expect(stakeholdersAddresses[0]).to.equal(address[0]);
+            expect(stakeholdersAddresses.length === 0);
         });
 
         it('6. Sends an event when the stakeholder is removed from the list', async function () {
@@ -91,13 +91,13 @@ contract("Staking", accounts => {
                 'StakeholderRemoved',{stakeholderAddress: stakeholder1});
         });
 
-        it('7. Reverts removing a stakeholder if you are not the owner', async function() {
+        it('7. Reverts the operation -- removing a stakeholder -- if you are not the owner', async function() {
 
             await expectRevert(this.stakingInstance.removeStakeholder(stakeholder1, {from: stakeholder2}),
                 'Ownable: caller is not the owner');
         });
 
-        it('8. reverts -- removing the stakeholder -- if this stakeholder (address) is already removed from the list', async function() {
+        it('8. reverts the operation -- removing the stakeholder -- if this stakeholder (address) is already removed from the list', async function() {
 
             await this.stakingInstance.removeStakeholder(stakeholder1, {from: owner});
             await expectRevert(this.stakingInstance.removeStakeholder(stakeholder1, {from: owner}),
@@ -108,26 +108,53 @@ contract("Staking", accounts => {
 
     /**
      * Zone of the management (creation) of the stakes
-     */     //to test
+     */
     describe('C. adding stakes', function() {
 
-        xit('9. Test of the stake creation', async function() {
+        beforeEach( async function() {
+
+            //make all the operations needed before
+            await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
+
+        });
+
+        xit('9. Reverts the creation of the stake if the token address is false', async function() {
+            await expectRevert(this.stakingInstance.createStake(100,accounts[100], {from: stakeholder1}),
+                'This token address is false');
+
+        });
+
+        xit('10. Reverts the creation of the stake if it is not an ERC20', async function() {
+            //this.stakeCoinInstance.IERC20(stakeCoinAddress).totalSupply() = 0;
+            //this.stakeCoinInstance.totalSupply() = 0;
+            //IERC20(stakeCoinAddress).totalSupply() = 0;
+
+            //await expectRevert(this.stakingInstance.createStake...)
+        })
+
+        it('11. Test of the stake creation', async function() {
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
-            //we use the balanceOf function of stakeCoinInstance to check that stakeholder1
-            //has received the tokens and which corresponds to amount1
+            /* we use the balanceOf function of stakeCoinInstance to check that stakeholder1 has
+            received the tokens and which corresponds to amount1 */
             const balance = await this.stakeCoinInstance.balanceOf(stakeholder1);
-            expect(balance).to.equal(amount1);
+
+            expect(balance).to.be.bignumber.equal(amount1);
 
             // We stake the event 'StakeCreated' when stakeholder1 stakes
-            expectEvent(await this.stakingInstance.createStake(amount1, {from: stakeholder1}),
-            'StakeCreated', {stakeholderStake: amount1 });
+            //expectEvent(await this.stakingInstance.createStake(amount1, {from: stakeholder1}),
+            //'StakeCreated', {stakeholderStake: amount1 });
 
             // vérifier le montant staké (stakeOf)
 
         });
 
+        it('12. Sends an event when the stake is created', async function() {
+
+            expectEvent(await this.stakingInstance.createStake(amount2, stakeCoinAddress, {from: stakeholder1}),
+                'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount2, tokenAddress: stakeCoinAddress});
+        });
 
         /**
          * Zone of the management (removing) of the stakes

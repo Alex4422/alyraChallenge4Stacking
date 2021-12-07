@@ -10,14 +10,6 @@ class Main extends Component {
 
             <div id='content' className='mt-3' >
 
-
-
-                ddd
-
-
-
-
-
                 <table className='table text-muted text-center'>
                     <thead>
                         <tr style={{color:'white'}}>
