@@ -60,6 +60,7 @@ contract Staking is Ownable {
      */
     address public ownerOfContract;
 
+
     /**
      * @notice priceFeed consumes price data with AggregatorV3Interface
      */
@@ -77,7 +78,6 @@ contract Staking is Ownable {
     //admin & user modifier
     //event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
     event StakeRemoved(address stakeholderAddress, address tokenAddress);
-
 
     //admin & user modifier
     event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress);
@@ -114,6 +114,7 @@ contract Staking is Ownable {
     /**
      *   @notice gives the list of the addresses of the stakeholders
      *   @return list of addresses corresponding to the stakeholders
+     *   <!> it works with Remix!
      */
     function getStakeholders() public view returns(address[] memory){
         return stakeholders;
@@ -196,7 +197,7 @@ contract Staking is Ownable {
         @notice aggregates all the amounts staked of all stakeholders for a given token
         @param _tokenAddress We sum the staked amounts for this token
         @return uint256 The sum of the staked amounts from all stakeholders
-        <!> TO TEST AGAIN!
+        <!> TO TEST AGAIN!!
     */
     function sumOfStakes(address _tokenAddress) public view returns(uint256){
 
@@ -216,16 +217,12 @@ contract Staking is Ownable {
     */
     function createStake(uint256 _stake, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public {
 
-        //Is it a false address 0x0 and the sc is well deployed? tokenAddress != address(0)
-        //require(_tokenAddress != address(0),'This token address is false');
-
         //Is it a erc20?
         require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
 
-
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
-        // transfert des tokens sur _tokenAddress de msg.sender vers le contract du montant _stake
+        // transfert des tokens situés sur _tokenAddress de msg.sender vers le contract du montant _stake
         IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
 
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
@@ -243,14 +240,18 @@ contract Staking is Ownable {
 
         //TODO
         //calcul de la reward lié au token
+        uint256 removeStakeReward = calculateReward(msg.sender, _tokenAddress);
+
         //transfer du token reward vers msg.sender
+        IERC20(_tokenAddress).transfer(msg.sender, removeStakeReward);
 
         //calcul du nombre de token staker
         //uint stakedToken = historyStake[msg.sender][_tokenAddress][i].amount;
+        uint stakedToken;
+
 
         //transferer ce montant de token vers msg.sender
-        //IERC20(_tokenAddress).transfer(msg.sender,_stake);
-        //IERC20(_tokenAddress).transfer(msg.sender,stakedToken);
+        IERC20(_tokenAddress).transfer(msg.sender,stakedToken);
 
         //delete l'historique pour repartir à 0
         delete historyStake[msg.sender][_tokenAddress];
@@ -345,5 +346,6 @@ contract Staking is Ownable {
 
         emit RewardWithdrawn(msg.sender);
     }
+
 }
 

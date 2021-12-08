@@ -9,7 +9,6 @@ import Main from './Main.js';
 import "./App.css";
 
 class App extends Component {
-    state = {web3: null, accounts: null, contract: null, ownerOfContract: null};
 
     /**
      * entity: constructor
@@ -19,6 +18,10 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            web3: null,
+            accounts: null,
+            contract: null,
+            ownerOfContract: null,
             account: '0x0',
             stakeCoin: {},
             staking: {},

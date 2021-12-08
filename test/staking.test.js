@@ -79,9 +79,6 @@ contract("Staking", accounts => {
             await this.stakingInstance.removeStakeholder(stakeholder1, {from:owner});
             let stakeholdersAddresses = await this.stakingInstance.getStakeholders();
 
-            //NO!
-            //expect(stakeholdersAddresses[0]).to.equal(accounts[1]);
-            //expect(stakeholdersAddresses[0]).to.equal(address[0]);
             expect(stakeholdersAddresses.length === 0);
         });
 
@@ -119,8 +116,8 @@ contract("Staking", accounts => {
         });
 
         xit('9. Reverts the creation of the stake if the token address is false', async function() {
-            await expectRevert(this.stakingInstance.createStake(100,accounts[100], {from: stakeholder1}),
-                'This token address is false');
+            //await expectRevert(this.stakingInstance.createStake(100,accounts[100], {from: stakeholder1}),
+              //  'This token address is false');
 
         });
 
@@ -143,17 +140,22 @@ contract("Staking", accounts => {
             expect(balance).to.be.bignumber.equal(amount1);
 
             // We stake the event 'StakeCreated' when stakeholder1 stakes
-            //expectEvent(await this.stakingInstance.createStake(amount1, {from: stakeholder1}),
-            //'StakeCreated', {stakeholderStake: amount1 });
+            await this.stakeCoinInstance.transferFrom(stakeholder1, amount1, {from:owner});
 
-            // vérifier le montant staké (stakeOf)
+            //await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
+            expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
+               'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
+
+            // check the amount staked (stakeOf)
 
         });
 
-        it('12. Sends an event when the stake is created', async function() {
+        xit('12. Sends an event when the stake is created', async function() {
 
             expectEvent(await this.stakingInstance.createStake(amount2, stakeCoinAddress, {from: stakeholder1}),
-                'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount2, tokenAddress: stakeCoinAddress});
+            'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount2, tokenAddress: stakeCoinAddress});
+
+
         });
 
         /**

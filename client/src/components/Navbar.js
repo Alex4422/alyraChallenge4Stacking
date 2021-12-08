@@ -5,7 +5,7 @@ class Navbar extends Component {
     render() {
         return (
             <nav className='navbar navbar-dark fixed-top shadow p-0' style={{backgroundColor:'black', height:'50px'}}>
-                <a className='navbar-brand col-sm-3 col-md-2 mr-0'
+                <a className='navbar-brand col-sm-3 col-md-2 mr-0' href=''
                    style={{color:'white'}}>DAPP Staking exercise</a>
 
                 {/*reexplain this pls:  CURRENT ADDRESS: {this.props.account} not {this.props.account[0]}? */}
