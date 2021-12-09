@@ -30,12 +30,13 @@ class Main extends Component {
                         <div style={{borderSpacing:'0 1em'}}>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Balance:
+                                Balance: ({this.state?.userBalance})
+                                {userBalance}
                             </div>
 
                             <div className='input-group mb-4 flex-column'>
 
-                                <label for='input-stake-token' className='float-left'  style={{marginLeft:'15px'}}><b>Stake tokens</b></label>
+                                <label htmlFor='input-stake-token' className='float-left'  style={{marginLeft:'15px'}}><b>Stake tokens</b></label>
                                 <input className="mb-4"
                                     id='input-stake-token'
                                     type='text'

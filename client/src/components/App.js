@@ -27,7 +27,8 @@ class App extends Component {
             staking: {},
             stakeCoinBalance: '0',
             stakingBalance: '0',
-            loading: true
+            loading: true,
+            userBalance: null
 
         }
     }
@@ -40,22 +41,25 @@ class App extends Component {
         try {
             // Get network provider and web3 instance.
             const web3 = await getWeb3();
-
-            // Use web3 to get the user's accounts.
-            const accounts = await web3.eth.getAccounts();
-
-            this.setState({accounts:accounts[0]});
-            console.log('accounts[0]: ', accounts[0]);
-
-            // Get the contract instance.
             const networkId = await web3.eth.net.getId();
             const deployedNetwork = Staking.networks[networkId];
-
             const instance = new web3.eth.Contract(
                 Staking.abi,
                 deployedNetwork && deployedNetwork.address,
             );
-            this.setState({accounts});
+            this.setState({ web3: web3, contract: instance });
+
+
+
+            // Use web3 to get the user's accounts.
+            const accounts = await web3.eth.getAccounts();
+            this.setState({accounts:accounts[0]});
+
+
+            const userBalance = await web3.eth.getBalance(accounts[0]);
+            this.setState({userBalance});
+
+            console.log(this.state)
 
             //let StakingContractInstanceBalance = await StakingContractInstance.methods.reward;
 
@@ -67,7 +71,8 @@ class App extends Component {
 
             // Set web3, accounts, and contract to the state, and then proceed with an
             // example of interacting with the contract's methods.
-            this.setState({ web3, contract: instance }, this.runInit);
+
+
         } catch (error) {
             // Catch any errors for any of the above operations.
             alert(
@@ -77,15 +82,6 @@ class App extends Component {
         }
     };
 
-    /**
-     *
-     * @returns {Promise<void>}
-     */
-    runInit = async () => {
-
-        const { contract } = this.state;
-
-    };
 
 
 
