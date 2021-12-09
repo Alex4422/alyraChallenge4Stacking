@@ -112,6 +112,9 @@ contract("Staking", accounts => {
 
             //make all the operations needed before
             await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
+            //await this.stakeCoinAddress.approve(stakeholder1, {from: owner});
+            const amount = new BN("1000000");
+            const result = await this.stakeCoinInstance.approve(stakeholder1, amount, { from: owner });
 
         });
 
@@ -127,7 +130,10 @@ contract("Staking", accounts => {
             //IERC20(stakeCoinAddress).totalSupply() = 0;
 
             //await expectRevert(this.stakingInstance.createStake...)
-        })
+
+            let response = await this.stakeCoinInstance.totalSupply({ from: owner});
+            expect(response).to.be.above(0);
+        });
 
         it('11. Test of the stake creation', async function() {
             // We transfer some tokens to stakeholder1
@@ -140,9 +146,6 @@ contract("Staking", accounts => {
             expect(balance).to.be.bignumber.equal(amount1);
 
             // We stake the event 'StakeCreated' when stakeholder1 stakes
-            await this.stakeCoinInstance.transferFrom(stakeholder1, amount1, {from:owner});
-
-            //await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
             expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
                'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
 

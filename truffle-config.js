@@ -7,6 +7,11 @@ module.exports = {
   networks: {
     develop: {
       port: 8545
+    },
+    test: {
+      network_id:"*",
+      host:"127.0.0.1",
+      port: 7545
     }
   },
 
