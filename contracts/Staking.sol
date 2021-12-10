@@ -245,13 +245,13 @@ contract Staking is Ownable {
         //transfer du token reward vers msg.sender
         IERC20(_tokenAddress).transfer(msg.sender, removeStakeReward);
 
-        //calcul du nombre de token staker
-        //uint stakedToken = historyStake[msg.sender][_tokenAddress][i].amount;
-        uint stakedToken;
-
+        //calcul du nombre de token "staked"
+        uint stakedTokenSum;
+        for (uint i; i < historyStake[msg.sender][_tokenAddress].length; i++)
+            stakedTokenSum = stakedTokenSum + historyStake[msg.sender][_tokenAddress][i].amount;
 
         //transferer ce montant de token vers msg.sender
-        IERC20(_tokenAddress).transfer(msg.sender,stakedToken);
+        IERC20(_tokenAddress).transfer(msg.sender,stakedTokenSum);
 
         //delete l'historique pour repartir à 0
         delete historyStake[msg.sender][_tokenAddress];
@@ -314,7 +314,7 @@ contract Staking is Ownable {
         <!> TO TEST AGAIN!
     */
     function distributeRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender)
-    public onlyOwner {
+    public payable onlyOwner {
 
         uint rewardQuantity;
         for (uint256 i = 0; i < stakeholders.length; i++ ){

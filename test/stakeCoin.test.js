@@ -6,7 +6,7 @@ contract("ERC20", (accounts) => {
 
     const _name = "Stake Coin Token";
     const _symbol = "STC";
-    const _initialStakeCoinSupply = new BN(10).pow(new BN(18));
+    const _initialStakeCoinSupply = new BN('10').pow(new BN('18'));
     const [owner, user, recipient] = accounts;
 
     /**

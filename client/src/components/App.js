@@ -29,7 +29,6 @@ class App extends Component {
             stakingBalance: '0',
             loading: true,
             userBalance: null
-
         }
     }
 
@@ -49,8 +48,6 @@ class App extends Component {
             );
             this.setState({ web3: web3, contract: instance });
 
-
-
             // Use web3 to get the user's accounts.
             const accounts = await web3.eth.getAccounts();
             this.setState({accounts:accounts[0]});
@@ -59,7 +56,8 @@ class App extends Component {
             const userBalance = await web3.eth.getBalance(accounts[0]);
             this.setState({userBalance});
 
-            console.log(this.state)
+            console.log('userBalance: ', userBalance);
+            console.log('state of the object: ', this.state);
 
             //let StakingContractInstanceBalance = await StakingContractInstance.methods.reward;
 
@@ -82,11 +80,6 @@ class App extends Component {
         }
     };
 
-
-
-
-
-
     render() {
         const { accounts } = this.state;
         if (!this.state.web3) {
@@ -94,26 +87,19 @@ class App extends Component {
         }
         return (
 
-
             <div className="App" style={{position:'relative'}}>
-
 
                 <Navbar  account={this.state.accounts}/>
 
                     <div className='container-fluid mt-5'>
 
-
-
                         <div className='row justify-content-center'>
 
                             <main role='main' className='col-lg-12 ml-auto mr-auto' style={{maxWidth:'600px', minHeight:'100vm'}} >
 
-
                                 <div>
 
                                     <Main/>
-
-
 
 
                                 </div>

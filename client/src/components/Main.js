@@ -6,6 +6,11 @@ import StakeholdersManagement from './StakeholdersManagement.js';
 class Main extends Component {
 
     render() {
+
+        //const {userBalance} = this.props.state;
+        console.log('userBalanceMain: ', this.props.userBalance);
+
+
         return (
 
             <div id='content' className='mt-3' >
@@ -30,8 +35,12 @@ class Main extends Component {
                         <div style={{borderSpacing:'0 1em'}}>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Balance: ({this.state?.userBalance})
-                                {userBalance}
+                                Balance:    
+                                            {/*{ userBalance }*/}
+                                            {/*{this.state.userBalance}*/}
+                                            {/*this.setState({ this.state.userBalance })*/}
+                                            {/*{this.props.userBalance}*/}
+                                            {/*({this.state?.userBalance} {userBalance}*/}
                             </div>
 
                             <div className='input-group mb-4 flex-column'>
