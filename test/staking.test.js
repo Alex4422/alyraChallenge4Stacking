@@ -10,6 +10,7 @@ contract("Staking", accounts => {
     const stakeholder2 = accounts[2];
     const stakeCoinAddress = accounts[3];
     const amount1 = new BN('10');
+
     const amount2 = new BN('20');
     const initialStakeCoinSupply = new BN('10').pow(new BN('18'));
 
@@ -101,7 +102,7 @@ contract("Staking", accounts => {
     /**
      * Zone of the management (creation) of the stakes
      */
-    describe('C. adding stakes', function() {
+    describe.only('C. adding stakes', function() {
 
         beforeEach( async function() {
 
@@ -120,14 +121,11 @@ contract("Staking", accounts => {
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
-            /* we use the balanceOf function of stakeCoinInstance to check that stakeholder1 has
-            received the tokens and which corresponds to amount1 */
+            /* we use the balanceOf function of stakeCoinInstance to check that stakeholder1 has received the tokens and which corresponds to amount1 */
             const balance = await this.stakeCoinInstance.balanceOf(stakeholder1);
-
             expect(balance).to.be.bignumber.equal(amount1);
 
             //We test if the function "transferFrom" works
-            //let amountToTransferFrom = new BN('50');
             let ownerBalanceBeforeTransfer = await this.stakeCoinInstance.balanceOf(owner);
             let stakeholder2BalanceBeforeTransfer = await this.stakeCoinInstance.balanceOf(stakeholder2);
 
@@ -137,22 +135,24 @@ contract("Staking", accounts => {
             let ownerBalanceAfterTransfer = await this.stakeCoinInstance.balanceOf(owner);
             let stakeholder2BalanceAfterTransfer = await this.stakeCoinInstance.balanceOf(stakeholder2);
 
-            expect(ownerBalanceAfterTransfer).to.be.bignumber.equal(ownerBalanceBeforeTransfer - amount1);
-            expect(stakeholder2BalanceAfterTransfer).to.be.bignumber.equal(stakeholder2BalanceBeforeTransfer + amount1);
-
+            expect(ownerBalanceAfterTransfer.toString()).to.be.equal((ownerBalanceBeforeTransfer.sub(amount1).toString()));
+            expect(stakeholder2BalanceAfterTransfer.toString()).to.be.equal(stakeholder2BalanceBeforeTransfer.add(amount1).toString());
 
             // We stake the event 'StakeCreated' when stakeholder1 stakes
-            //expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
-              // 'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
+            //const receipt = await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
+            //console.log({receipt});
+
+            //expectEvent(receipt, 'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
 
             // check the amount staked (stakeOf)
+
 
         });
 
         xit('11. Sends an event when the stake is created', async function() {
 
-            expectEvent(await this.stakingInstance.createStake(amount2, stakeCoinAddress, {from: stakeholder1}),
-            'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount2, tokenAddress: stakeCoinAddress});
+            expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
+            'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
         });
 
         /**
@@ -176,7 +176,7 @@ contract("Staking", accounts => {
 
                 //make all the operations needed before
                 await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
-                await this.stakingInstance
+                //await this.stakingInstance
 
 
 
