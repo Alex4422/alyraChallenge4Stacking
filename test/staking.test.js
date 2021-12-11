@@ -10,7 +10,6 @@ contract("Staking", accounts => {
     const stakeholder2 = accounts[2];
     const stakeCoinAddress = accounts[3];
     const amount1 = new BN('10');
-
     const amount2 = new BN('20');
     const initialStakeCoinSupply = new BN('10').pow(new BN('18'));
 
@@ -117,7 +116,7 @@ contract("Staking", accounts => {
 
         });
 
-        it('10. Test of the stake creation', async function() {
+        xit('10. Test of the stake creation', async function() {
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
@@ -141,18 +140,33 @@ contract("Staking", accounts => {
             // We stake the event 'StakeCreated' when stakeholder1 stakes
             //const receipt = await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
             //console.log({receipt});
-
             //expectEvent(receipt, 'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
 
             // check the amount staked (stakeOf)
-
-
         });
 
-        xit('11. Sends an event when the stake is created', async function() {
+        it('11. Sends an event when the stake is created', async function() {
 
-            expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
-            'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
+            // We transfer some tokens to stakeholder1
+            await this.stakeCoinInstance.transfer(stakeholder1, new BN('100'), {from:owner});
+
+            await this.stakeCoinInstance.approve(stakeholder1, amount1, {from:owner});
+            await this.stakeCoinInstance.transferFrom(owner, stakeholder2, amount1, {from: stakeholder1});
+            //until there, it is ok
+
+            let allowanceAfter = await this.stakeCoinInstance.allowance(owner, stakeholder1);
+
+            expect(allowanceAfter).to.be.bignumber.equal(new BN('0'));
+
+            //expectEvent(await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner}),
+            //'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
+
+
+
+
+            //await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
+            //expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
+            //'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
         });
 
         /**
