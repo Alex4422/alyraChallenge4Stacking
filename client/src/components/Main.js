@@ -1,17 +1,63 @@
 import React, {Component} from 'react';
-
-
-import StakeholdersManagement from './StakeholdersManagement.js';
+import Web3 from 'web3';
 
 class Main extends Component {
 
+    constructor(props) {
+
+        super(props);
+
+        this.state = {
+            inputValue: '',
+            errorMessage: ''
+        }
+        console.log({props})
+        console.log(this.props)
+    }
+
+
+    isInputValid = input => {
+        return input != "";
+    }
+
+    handleDeposit = (event) => {
+        event.preventDefault();
+        //console.log(event);
+
+        const {inputValue} = this.state;
+        if (!this.isInputValid(inputValue)){
+            this.setState({errorMessage: " type a number pls!"});
+            return
+        }
+
+        console.log("handle deposit props", this.props);
+        this.props.contract.methods.createStake().then(console.log).catch(console.error)
+        //console.log(this.defaultProps);
+
+
+
+        //console.log(inputValue);
+    }
+
+    handleChange = (event) => {
+
+        this.setState({inputValue: event.target.value});
+
+    }
+
     render() {
 
-        //const {userBalance} = this.props.state;
-        console.log('userBalanceMain: ', this.props.userBalance);
+        const { web3 } = this.props;
+        //objet1 = objet2
+        //const {userBalance} = this.props;
+        const userBalance = this.props.userBalance;
 
+
+//const balance = this.props.userBalance != null ? this.props.userBalance : "not found"
+        //const balance = this.props.userBalance || "not found"
 
         return (
+
 
             <div id='content' className='mt-3' >
 
@@ -35,8 +81,9 @@ class Main extends Component {
                         <div style={{borderSpacing:'0 1em'}}>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Balance:    
-                                            {/*{ userBalance }*/}
+                                Balance:
+
+                                    {userBalance && web3.utils.fromWei(userBalance.toString())}
                                             {/*{this.state.userBalance}*/}
                                             {/*this.setState({ this.state.userBalance })*/}
                                             {/*{this.props.userBalance}*/}
@@ -51,9 +98,11 @@ class Main extends Component {
                                     type='text'
                                     placeholder='0'
                                     required
+                                       value={this.state.value}
+                                       onChange={this.handleChange}
                                 />
-                                <button type='submit' className='btn btn-primary btn-lg btn-block'  >DEPOSIT</button>
-
+                                <button type='submit' className='btn btn-primary btn-lg btn-block' onClick={this.handleDeposit}>DEPOSIT</button>
+                                {this.state.errorMessage}
                             </div>
                         </div>
                     </form>

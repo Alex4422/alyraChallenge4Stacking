@@ -218,7 +218,7 @@ contract Staking is Ownable {
     function createStake(uint256 _stake, address _tokenAddress) /*onlyStakeholderOrOwnerOfContract(msg.sender)*/ public {
 
         //Is it a erc20?
-        //require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
+        require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
 
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
