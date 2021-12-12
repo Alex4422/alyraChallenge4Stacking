@@ -48,13 +48,8 @@ class App extends Component {
                 );
 
                 this.setState({web3: web3, contract: instance});
-                //console.log(instance);
-                //console.log(instance.methods);
-            console.log(this.state.contract.methods);
-                //await contract.methods..send({from:accounts[0]});
-            //console.log(this.state);
 
-                // Use web3 to get the user's accounts.
+                //Use web3 to get the user's accounts.
                 //const accounts = await web3.eth.getAccounts();
 
                 window.ethereum.on('accountsChanged', async (accounts) => {
@@ -66,17 +61,7 @@ class App extends Component {
                     console.log('userBalance: ', userBalance);
                     console.log('state of the object: ', this.state);
 
-                    //let StakingContractInstanceBalance = await StakingContractInstance.methods.reward;
-
-                    //let StakingContractInstanceBalance = await StakingContractInstance.methods.balanceOf(this.state.account).call();
-
-                    //this.setState({StakingContractInstanceBalance: StakingContractInstanceBalance.toString() });
-                    //console.log('balance: ', StakingContractInstanceBalance );
-
-
-                    // Set web3, accounts, and contract to the state, and then proceed with an
-                    // example of interacting with the contract's methods.
-                });
+                    });
         } catch (error) {
             // Catch any errors for any of the above operations.
             alert(
@@ -106,7 +91,6 @@ class App extends Component {
                                 <div>
 
                                     <Main userBalance={this.state.userBalance} web3={this.state.web3} contract={this.state.contract}/>
-
 
                                 </div>
                             </main>

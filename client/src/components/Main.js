@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Web3 from 'web3';
 
 class Main extends Component {
 
@@ -9,36 +8,55 @@ class Main extends Component {
 
         this.state = {
             inputValue: '',
-            errorMessage: ''
+            errorMessage: '',
+            amount:''
         }
         console.log({props})
         console.log(this.props)
     }
 
-
+    /**
+     *
+     * @param input
+     * @returns {boolean}
+     */
     isInputValid = input => {
-        return input != "";
+        return input !== "";
     }
 
-    handleDeposit = (event) => {
-        event.preventDefault();
-        //console.log(event);
+    /**
+     *
+     * @param event
+     * @returns {Promise<void>}
+     */
+    handleDeposit = async(event) => {
 
-        const {inputValue} = this.state;
+        event.preventDefault();
+        const {inputValue, web3} = this.state;
+
         if (!this.isInputValid(inputValue)){
             this.setState({errorMessage: " type a number pls!"});
             return
         }
 
         console.log("handle deposit props", this.props);
-        this.props.contract.methods.createStake().then(console.log).catch(console.error)
-        //console.log(this.defaultProps);
+        //this.props.contract.methods.createStake().then(console.log).catch(console.error);
 
+        console.log('inputValue', inputValue);
+        let amount;
+        amount = inputValue.toString();
+        console.log('amount', amount);
+        amount = web3.utils.toWei(amount, 'Ether');
 
-
+        //call of the method of the smart contract
+        //this.props.contract.methods.createStake(amount);
         //console.log(inputValue);
     }
 
+    /**
+     *
+     * @param event
+     */
     handleChange = (event) => {
 
         this.setState({inputValue: event.target.value});
@@ -48,16 +66,10 @@ class Main extends Component {
     render() {
 
         const { web3 } = this.props;
-        //objet1 = objet2
-        //const {userBalance} = this.props;
+
         const userBalance = this.props.userBalance;
 
-
-//const balance = this.props.userBalance != null ? this.props.userBalance : "not found"
-        //const balance = this.props.userBalance || "not found"
-
         return (
-
 
             <div id='content' className='mt-3' >
 
@@ -81,13 +93,7 @@ class Main extends Component {
                         <div style={{borderSpacing:'0 1em'}}>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Balance:
-
-                                    {userBalance && web3.utils.fromWei(userBalance.toString())}
-                                            {/*{this.state.userBalance}*/}
-                                            {/*this.setState({ this.state.userBalance })*/}
-                                            {/*{this.props.userBalance}*/}
-                                            {/*({this.state?.userBalance} {userBalance}*/}
+                                Balance: {userBalance && web3.utils.fromWei(userBalance.toString())}
                             </div>
 
                             <div className='input-group mb-4 flex-column'>
@@ -96,7 +102,7 @@ class Main extends Component {
                                 <input className="mb-4"
                                     id='input-stake-token'
                                     type='text'
-                                    placeholder='0'
+                                    placeholder='Enter a amount of token please'
                                     required
                                        value={this.state.value}
                                        onChange={this.handleChange}
@@ -116,7 +122,6 @@ class Main extends Component {
             </div>
         );
     }
-
 }
 
 export default Main;
