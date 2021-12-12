@@ -89,6 +89,7 @@ class App extends Component {
 
                                 <div>
 
+                                    Please, can you change first the address of your metamask wallet.
                                     <Main userBalance={this.state.userBalance} web3={this.state.web3} contract={this.state.contract}
                                           stakingBalance={this.state.stakingBalance} currentAccount={this.state.accounts[0]}
                                     />
