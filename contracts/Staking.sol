@@ -31,10 +31,11 @@ contract Staking is Ownable {
      */
     mapping (address => mapping(address => Stake[])) public historyStake;
 
+    /*
     function getHistoryStake(address stakeholderAddress) public view returns(address, uint, uint){
         return historyStake[stakeholderAddress];
     }
-
+    */
 
     /**
      * @notice to know who are all the stakeholders
@@ -80,7 +81,10 @@ contract Staking is Ownable {
     //admin modifier onlyOwner
     event StakeholderRemoved(address stakeholderAddress);
     //admin & user modifier
-    event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
+    //event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);`
+
+    event StakeCreated();
+
     //admin & user modifier
     //event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
     event StakeRemoved(address stakeholderAddress, address tokenAddress);
@@ -193,7 +197,7 @@ contract Staking is Ownable {
         @return The sum in wei
         <!> TO TEST AGAIN!
     */
-    function stakeOf(address _addressStakeHolder, address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public view returns(Stake[] memory){
+    function stakeOf(address _addressStakeHolder, address _tokenAddress) public view returns(Stake[] memory){
 
         return(historyStake[_addressStakeHolder][_tokenAddress]);
 
@@ -223,15 +227,26 @@ contract Staking is Ownable {
     */
     function createStake(uint256 _stake, address _tokenAddress) /*onlyStakeholderOrOwnerOfContract(msg.sender)*/ public {
 
-        //Is it a erc20?
-        require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
+        //Is it a erc20? to REMOVE
+        //require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
 
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
         // transfert des tokens situés sur _tokenAddress de msg.sender vers le contract du montant _stake
+        //IERC20(_tokenAddress).approve()
+
+        /*
+        function approveToken(address token) external {
+            IERC20(token).approve(address(this), 1000);
+        }
+
+
+        await IERC20(_tokenAddress).approve(recipient, amount1, {from:owner});
         IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
 
-        emit StakeCreated(msg.sender, _stake, _tokenAddress);
+        //emit StakeCreated(msg.sender, _stake, _tokenAddress);
+        */
+        emit StakeCreated();
     }
 
     /**
@@ -319,8 +334,7 @@ contract Staking is Ownable {
         @param _tokenAddress we will distribute the rewards associated to this tokenAddress
         <!> TO TEST AGAIN!
     */
-    function distributeRewards(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender)
-    public payable onlyOwner {
+    function distributeRewards(address _tokenAddress) public payable onlyOwner {
 
         uint rewardQuantity;
         for (uint256 i = 0; i < stakeholders.length; i++ ){

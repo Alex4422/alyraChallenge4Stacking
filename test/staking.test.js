@@ -20,7 +20,6 @@ contract("Staking", accounts => {
 
         this.stakingInstance = await Staking.new(stakeCoinAddress);
         this.stakeCoinInstance = await StakeCoin.new(new BN('10').pow(new BN('18')));
-
     });
 
     /**
@@ -109,14 +108,24 @@ contract("Staking", accounts => {
             await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
         });
 
-        it('9. checks the initial StakeCoin Supply after a deploy', async function() {
+        xit('9. Checks the initial StakeCoin Supply after a deploy', async function() {
 
             let response = await this.stakeCoinInstance.totalSupply({from: owner});
             expect(response).to.be.bignumber.equal(initialStakeCoinSupply);
 
         });
 
-        xit('10. Test of the stake creation', async function() {
+        xit('9.a. Checks stakeOf', async function() {
+
+
+            let result = await this.stakingInstance.stakeOf(stakeholder1, stakeCoinAddress);
+            console.log('result', result);
+
+        });
+
+
+        //it('10. Test of the stake creation', async function() {
+        xit('10. Transfer between 2 users', async function() {
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
@@ -137,15 +146,22 @@ contract("Staking", accounts => {
             expect(ownerBalanceAfterTransfer.toString()).to.be.equal((ownerBalanceBeforeTransfer.sub(amount1).toString()));
             expect(stakeholder2BalanceAfterTransfer.toString()).to.be.equal(stakeholder2BalanceBeforeTransfer.add(amount1).toString());
 
-            // We stake the event 'StakeCreated' when stakeholder1 stakes
-            //const receipt = await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
-            //console.log({receipt});
-            //expectEvent(receipt, 'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
-
-            // check the amount staked (stakeOf)
         });
 
-        it('11. Sends an event when the stake is created', async function() {
+        it('11b. test of the stake is created', async function() {
+
+            const receipt = await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner});
+            console.log('receipt: ', receipt);
+
+            /*expectEvent(receipt,
+                'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
+*/
+            expectEvent(receipt, 'StakeCreated');
+
+        });
+
+
+        /*it('11. Sends an event when the stake is created', async function() {
 
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, new BN('100'), {from:owner});
@@ -153,21 +169,14 @@ contract("Staking", accounts => {
             await this.stakeCoinInstance.approve(stakeholder1, amount1, {from:owner});
             await this.stakeCoinInstance.transferFrom(owner, stakeholder2, amount1, {from: stakeholder1});
             //until there, it is ok
-
             let allowanceAfter = await this.stakeCoinInstance.allowance(owner, stakeholder1);
 
             expect(allowanceAfter).to.be.bignumber.equal(new BN('0'));
 
-            //expectEvent(await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner}),
-            //'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
+            expectEvent(await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner}),
+            'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
 
-
-
-
-            //await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1});
-            //expectEvent(await this.stakingInstance.createStake(amount1, stakeCoinAddress, {from: stakeholder1}),
-            //'StakeCreated', {stakeholderAddress: stakeholder1,stakeholderStake: amount1, tokenAddress: stakeCoinAddress});
-        });
+        });*/
 
         /**
          * Zone of the management (removing) of the stakes
@@ -210,12 +219,27 @@ contract("Staking", accounts => {
          */
         describe('F. Reward management zone', function() {
 
-            xit('14. Rewards can only be distributed by the contract owner', async function () {
+            beforeEach( async function() {
 
-                //expectEvent( await this.stakingInstance.___()...)
+                //make all the operations needed before
+                await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
+                await this.stakingInstance.addStakeholder(stakeholder2, {from: owner});
+
+                await this.stakeCoinInstance.approve(stakeholder1, amount1, {from:owner});
+                await this.stakeCoinInstance.transferFrom(owner, stakeholder2, amount1, {from: stakeholder1});
             });
 
-            xit('15. Rewards are distributed.', async function () {
+            xit('14. Revert operation: rewards can only be distributed by the contract owner', async function () {
+
+                await expectRevert(this.stakingInstance.distributeRewards(stakeCoinAddress, {from: stakeholder2}),
+                    "Ownable: caller is not the owner");
+
+            });
+
+            xit('15. Sends an event after the rewards are distributed.', async function () {
+
+                expectEvent( await this.stakingInstance.distributeRewards(stakeCoinAddress, {from: owner}),
+                    'RewardsDistributed', {stakeholderAddress: owner, tokenAddress: stakeCoinAddress});
 
                 //expectEvent( await this.stakingInstance.___()...)
             });
