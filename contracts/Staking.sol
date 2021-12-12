@@ -24,11 +24,17 @@ contract Staking is Ownable {
         uint dateStaked;
     }
 
+
     /**
      * @notice historyStake connects the address of a stakeholder and a specific token one to an
      *         array of stake type
      */
     mapping (address => mapping(address => Stake[])) public historyStake;
+
+    function getHistoryStake(address stakeholderAddress) public view returns(address, uint, uint){
+        return historyStake[stakeholderAddress];
+    }
+
 
     /**
      * @notice to know who are all the stakeholders

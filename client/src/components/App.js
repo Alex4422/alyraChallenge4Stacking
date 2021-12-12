@@ -19,10 +19,9 @@ class App extends Component {
         super(props);
         this.state = {
             web3: null,
-            accounts: null,
+            accounts: [],
             contract: null,
             ownerOfContract: null,
-            account: '0x0',
             stakeCoin: {},
             staking: {},
             stakeCoinBalance: '0',
@@ -90,7 +89,9 @@ class App extends Component {
 
                                 <div>
 
-                                    <Main userBalance={this.state.userBalance} web3={this.state.web3} contract={this.state.contract}/>
+                                    <Main userBalance={this.state.userBalance} web3={this.state.web3} contract={this.state.contract}
+                                          stakingBalance={this.state.stakingBalance} currentAccount={this.state.accounts[0]}
+                                    />
 
                                 </div>
                             </main>

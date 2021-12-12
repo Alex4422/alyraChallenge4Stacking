@@ -32,7 +32,7 @@ class Main extends Component {
     handleDeposit = async(event) => {
 
         event.preventDefault();
-        const {inputValue, web3} = this.state;
+        const {inputValue, web3, currentAccount} = this.state;
 
         if (!this.isInputValid(inputValue)){
             this.setState({errorMessage: " type a number pls!"});
@@ -44,13 +44,19 @@ class Main extends Component {
 
         console.log('inputValue', inputValue);
         let amount;
-        amount = inputValue.toString();
+        amount = inputValue;
+
         console.log('amount', amount);
-        amount = web3.utils.toWei(amount, 'Ether');
+
+        amount = this.props.web3.utils.toWei(amount, 'ether');
+        console.log('amount', amount);
 
         //call of the method of the smart contract
-        //this.props.contract.methods.createStake(amount);
-        //console.log(inputValue);
+        await this.props.contract.methods.createStake(amount,currentAccount);
+
+        let historyStake = await this.props.contract.historyStake();
+
+        console.log('historyStake', historyStake);
     }
 
     /**
@@ -95,6 +101,11 @@ class Main extends Component {
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
                                 Balance: {userBalance && web3.utils.fromWei(userBalance.toString())}
                             </div>
+
+                            <div className='float-right mb-4' style={{marginRight:'8px'}}>
+                                Your current amount staked: {this.props.stakingBalance}
+                            </div>
+
 
                             <div className='input-group mb-4 flex-column'>
 
