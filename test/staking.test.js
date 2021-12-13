@@ -108,23 +108,24 @@ contract("Staking", accounts => {
             await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
         });
 
-        xit('9. Checks the initial StakeCoin Supply after a deploy', async function() {
+        it('9. Checks stakeOf', async function() {
 
-            let response = await this.stakeCoinInstance.totalSupply({from: owner});
-            expect(response).to.be.bignumber.equal(initialStakeCoinSupply);
+            //let stakedAmount = new BN('10');
+
+            const stakedAmount = web3.utils.toWei('1', 'ether');
+
+            await this.stakeCoinInstance.approve(this.stakingInstance.address, stakedAmount, {from: owner});
+            await this.stakingInstance.createStake(stakedAmount, stakeCoinAddress);
+
+            //let result = await this.stakingInstance.stakeOf(stakeholder1, stakeCoinAddress);
+            let currentStakeOf = await this.stakingInstance.stakeOf[stakeholder1][stakeCoinAddress][1].amount;
+
+            expect(currentStakeOf).to.equal(stakedAmount);
+
+            //console.log('result', result);
 
         });
 
-        xit('9.a. Checks stakeOf', async function() {
-
-
-            let result = await this.stakingInstance.stakeOf(stakeholder1, stakeCoinAddress);
-            console.log('result', result);
-
-        });
-
-
-        //it('10. Test of the stake creation', async function() {
         xit('10. Transfer between 2 users', async function() {
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
@@ -148,7 +149,7 @@ contract("Staking", accounts => {
 
         });
 
-        it('11b. test of the stake is created', async function() {
+        xit('11b. test of the stake is created', async function() {
 
             const receipt = await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner});
             console.log('receipt: ', receipt);
@@ -156,10 +157,9 @@ contract("Staking", accounts => {
             /*expectEvent(receipt,
                 'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
 */
-            expectEvent(receipt, 'StakeCreated');
+            //expectEvent(receipt, 'StakeCreated');
 
         });
-
 
         /*it('11. Sends an event when the stake is created', async function() {
 
@@ -199,9 +199,7 @@ contract("Staking", accounts => {
 
                 //make all the operations needed before
                 await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
-                //await this.stakingInstance
-
-
+                const receipt = await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner});
 
             });
 

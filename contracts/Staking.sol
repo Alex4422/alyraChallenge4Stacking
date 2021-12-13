@@ -24,18 +24,11 @@ contract Staking is Ownable {
         uint dateStaked;
     }
 
-
     /**
      * @notice historyStake connects the address of a stakeholder and a specific token one to an
      *         array of stake type
      */
     mapping (address => mapping(address => Stake[])) public historyStake;
-
-    /*
-    function getHistoryStake(address stakeholderAddress) public view returns(address, uint, uint){
-        return historyStake[stakeholderAddress];
-    }
-    */
 
     /**
      * @notice to know who are all the stakeholders
@@ -50,7 +43,7 @@ contract Staking is Ownable {
     /**
      * @notice We will use stakeCoinToken for the business functions to mint for example
      */
-    StakeCoin private stakeCoinToken;
+    StakeCoin public stakeCoinToken;
 
     /**
      * @notice The accumulated rewards for each stakeholder
@@ -81,13 +74,13 @@ contract Staking is Ownable {
     //admin modifier onlyOwner
     event StakeholderRemoved(address stakeholderAddress);
     //admin & user modifier
-    //event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);`
-
-    event StakeCreated();
+    event StakeCreated(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
+    //event StakeCreated();
 
     //admin & user modifier
     //event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
     event StakeRemoved(address stakeholderAddress, address tokenAddress);
+
 
     //admin & user modifier
     event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress);
@@ -200,7 +193,6 @@ contract Staking is Ownable {
     function stakeOf(address _addressStakeHolder, address _tokenAddress) public view returns(Stake[] memory){
 
         return(historyStake[_addressStakeHolder][_tokenAddress]);
-
     }
 
     /**
@@ -225,28 +217,22 @@ contract Staking is Ownable {
         @param _tokenAddress we are managing the stake related to this token
         <!> it works with Remix!
     */
-    function createStake(uint256 _stake, address _tokenAddress) /*onlyStakeholderOrOwnerOfContract(msg.sender)*/ public {
+    function createStake(uint256 _stake, address _tokenAddress) public {
 
-        //Is it a erc20? to REMOVE
-        //require(IERC20(_tokenAddress).totalSupply() > 0,'Not an ERC20');
+        //require staking amount to be greater than zero
+        require(_stake > 0, 'amount cannot be 0');
 
+        //Update Staking Balance
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
-        // transfert des tokens situés sur _tokenAddress de msg.sender vers le contract du montant _stake
-        //IERC20(_tokenAddress).approve()
+        // Transfer tether tokens to this contract address for staking
+        StakeCoin.transferFrom(msg.sender, address(this), _stake);
 
-        /*
-        function approveToken(address token) external {
-            IERC20(token).approve(address(this), 1000);
-        }
+        emit StakeCreated(msg.sender, _stake, _tokenAddress);
 
+        //for test: to clean after
+        //emit StakeCreated();
 
-        await IERC20(_tokenAddress).approve(recipient, amount1, {from:owner});
-        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
-
-        //emit StakeCreated(msg.sender, _stake, _tokenAddress);
-        */
-        emit StakeCreated();
     }
 
     /**
@@ -254,31 +240,25 @@ contract Staking is Ownable {
         @param _tokenAddress we are managing the stake related to this token
         <!> it works with Remix!
     */
-    function removeStake(address _tokenAddress) onlyStakeholderOrOwnerOfContract(msg.sender) public{
+    function removeStake(address _tokenAddress) public{
 
-        //Is it a erc20?
-        require(IERC20(_tokenAddress).totalSupply() > 0);
-
-        //TODO
-        //calcul de la reward lié au token
-        uint256 removeStakeReward = calculateReward(msg.sender, _tokenAddress);
-
-        //transfer du token reward vers msg.sender
-        IERC20(_tokenAddress).transfer(msg.sender, removeStakeReward);
-
-        //calcul du nombre de token "staked"
-        uint stakedTokenSum;
+        //calculation of the staked balance for the msg.sender
+        uint balance;
         for (uint i; i < historyStake[msg.sender][_tokenAddress].length; i++)
-            stakedTokenSum = stakedTokenSum + historyStake[msg.sender][_tokenAddress][i].amount;
+            balance = balance + historyStake[msg.sender][_tokenAddress][i].amount;
 
-        //transferer ce montant de token vers msg.sender
-        IERC20(_tokenAddress).transfer(msg.sender,stakedTokenSum);
+        //require: the balance to be greater than zero
+        require(balance > 0, 'Staking balance cannot be less than 0');
 
-        //delete l'historique pour repartir à 0
+        //transfer the balance of the tokens to the msg.sender address from our Staking contract
+        StakeCoin.transfer(msg.sender, balance);
+
+        //deletion of staking balance
         delete historyStake[msg.sender][_tokenAddress];
 
-        //emit StakeRemoved(msg.sender, _stake, _tokenAddress);
+        //We emit the event
         emit StakeRemoved(msg.sender, _tokenAddress);
+
     }
 
     /**
