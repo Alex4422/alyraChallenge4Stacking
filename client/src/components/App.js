@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-//import StakeCoin from "../contracts/StakeCoin.json"
+import StakeCoin from "../contracts/StakeCoin.json"
 import Staking from "../contracts/Staking.json";
 import getWeb3 from "../getWeb3";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -60,6 +60,13 @@ class App extends Component {
                     console.log('userBalance: ', userBalance);
                     console.log('state of the object: ', this.state);
 
+                    //let stakingBalance = await decentralBank.methods.stakingBalance(this.state.account).call()
+
+                    let stakingBalance = await instance.methods.stakingBalance.call();
+
+                    this.setState({ stakingBalance: stakingBalance.toString()})
+
+
                     });
         } catch (error) {
             // Catch any errors for any of the above operations.
@@ -72,6 +79,8 @@ class App extends Component {
 
     render() {
         const { accounts } = this.state;
+        const {contractName} = StakeCoin
+
         if (!this.state.web3) {
             return <div>Loading Web3, accounts, and contract...</div>;
         }
@@ -91,7 +100,7 @@ class App extends Component {
 
                                     Please, can you change first the address of your metamask wallet.
                                     <Main userBalance={this.state.userBalance} web3={this.state.web3} contract={this.state.contract}
-                                          stakingBalance={this.state.stakingBalance} currentAccount={this.state.accounts[0]}
+                                          stakingBalance={this.state.stakingBalance} currentAccount={this.state.accounts[0]} contractName={contractName}
                                     />
 
                                 </div>

@@ -3,16 +3,12 @@ import React, {Component} from 'react';
 class Main extends Component {
 
     constructor(props) {
-
         super(props);
-
         this.state = {
             inputValue: '',
             errorMessage: '',
             amount:''
         }
-        console.log({props})
-        console.log(this.props)
     }
 
     /**
@@ -39,24 +35,19 @@ class Main extends Component {
             return
         }
 
-        console.log("handle deposit props", this.props);
         //this.props.contract.methods.createStake().then(console.log).catch(console.error);
 
         console.log('inputValue', inputValue);
         let amount;
         amount = inputValue;
-
-        console.log('amount', amount);
-
         amount = this.props.web3.utils.toWei(amount, 'ether');
         console.log('amount', amount);
 
         //call of the method of the smart contract
-        await this.props.contract.methods.createStake(amount,currentAccount);
-
+        /*await this.props.contract.methods.createStake(amount,currentAccount);
         let historyStake = await this.props.contract.historyStake();
-
         console.log('historyStake', historyStake);
+        */
     }
 
     /**
@@ -66,7 +57,16 @@ class Main extends Component {
     handleChange = (event) => {
 
         this.setState({inputValue: event.target.value});
+    }
 
+    /**
+     *
+     * @param event
+     * @returns {Promise<void>}
+     */
+    handleWithdraw = async(event) => {
+
+        const { web3, currentAccount  } = this.state;
     }
 
     render() {
@@ -88,7 +88,7 @@ class Main extends Component {
                     </thead>
                     <tbody>
                         <tr style={{color:'black'}}>
-                          <td>Token</td>
+                          <td>Token: {this.props.contractName} </td>
                           <td>Reward associated</td>
                         </tr>
                     </tbody>
@@ -103,7 +103,7 @@ class Main extends Component {
                             </div>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Your current amount staked: {this.props.stakingBalance}
+                                Your staked balance is: {this.props.stakingBalance}
                             </div>
 
 

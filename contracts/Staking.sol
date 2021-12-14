@@ -66,6 +66,10 @@ contract Staking is Ownable {
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
 
+    /**
+     * @notice The staking balance of the stakeholder for a token given
+     */
+    uint public stakingBalance;
 
     /**
      * @notice priceFeed consumes price data with AggregatorV3Interface
@@ -227,13 +231,12 @@ contract Staking is Ownable {
         //require staking amount to be greater than zero
         require(_stake > 0, 'amount cannot be 0');
 
-        //Update Staking Balance
+        //Update of historyStake
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
         // Transfer tether tokens to this contract address for staking
         stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
 
-        // Update Staking Balance
         isStaking[msg.sender] = true;
         hasStaked[msg.sender] = true;
 
@@ -252,15 +255,14 @@ contract Staking is Ownable {
     function removeStake(address _tokenAddress) public{
 
         //calculation of the staked balance for the msg.sender
-        uint balance;
         for (uint i; i < historyStake[msg.sender][_tokenAddress].length; i++)
-            balance = balance + historyStake[msg.sender][_tokenAddress][i].amount;
+            stakingBalance = stakingBalance + historyStake[msg.sender][_tokenAddress][i].amount;
 
         //require: the balance to be greater than zero
-        require(balance > 0, 'Staking balance cannot be less than 0');
+        require(stakingBalance > 0, 'Staking balance cannot be less than 0');
 
         //transfer the balance of the tokens to the msg.sender address from our Staking contract
-        stakeCoinToken.transfer(msg.sender, balance);
+        stakeCoinToken.transfer(msg.sender, stakingBalance);
 
         //deletion of staking balance
         delete historyStake[msg.sender][_tokenAddress];
