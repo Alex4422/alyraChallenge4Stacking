@@ -226,7 +226,7 @@ contract Staking is Ownable {
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
         // Transfer tether tokens to this contract address for staking
-        StakeCoin.transferFrom(msg.sender, address(this), _stake);
+        stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
 
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
 
@@ -251,7 +251,7 @@ contract Staking is Ownable {
         require(balance > 0, 'Staking balance cannot be less than 0');
 
         //transfer the balance of the tokens to the msg.sender address from our Staking contract
-        StakeCoin.transfer(msg.sender, balance);
+        stakeCoinToken.transfer(msg.sender, balance);
 
         //deletion of staking balance
         delete historyStake[msg.sender][_tokenAddress];
