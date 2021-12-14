@@ -60,6 +60,12 @@ contract Staking is Ownable {
      */
     address public ownerOfContract;
 
+    /**
+     * @notice to know the state of stakeholder related to the staking
+     */
+    mapping(address => bool) public hasStaked;
+    mapping(address => bool) public isStaking;
+
 
     /**
      * @notice priceFeed consumes price data with AggregatorV3Interface
@@ -80,7 +86,6 @@ contract Staking is Ownable {
     //admin & user modifier
     //event StakeRemoved(address stakeholderAddress, uint256 stakeholderStake, address tokenAddress);
     event StakeRemoved(address stakeholderAddress, address tokenAddress);
-
 
     //admin & user modifier
     event RewardCalculated(address stakeholderAddress, uint reward, address tokenAddress);
@@ -228,6 +233,10 @@ contract Staking is Ownable {
         // Transfer tether tokens to this contract address for staking
         stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
 
+        // Update Staking Balance
+        isStaking[msg.sender] = true;
+        hasStaked[msg.sender] = true;
+
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
 
         //for test: to clean after
@@ -255,6 +264,9 @@ contract Staking is Ownable {
 
         //deletion of staking balance
         delete historyStake[msg.sender][_tokenAddress];
+
+        // Update Staking Status
+        isStaking[msg.sender] = false;
 
         //We emit the event
         emit StakeRemoved(msg.sender, _tokenAddress);
