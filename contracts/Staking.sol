@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.9;
 
-import './StakeCoin.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+//import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v2.5.0/contracts/math/SafeMath.sol";
+import "./StakeCoin.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -66,10 +67,7 @@ contract Staking is Ownable {
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
 
-    /**
-     * @notice The staking balance of the stakeholder for a token given
-     */
-    uint public stakingBalance;
+
 
     /**
      * @notice priceFeed consumes price data with AggregatorV3Interface
@@ -240,7 +238,7 @@ contract Staking is Ownable {
 
 
         isStaking[msg.sender] = true;
-        hasStaked[msg.sender] = true;
+        //hasStaked[msg.sender] = true;
 
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
 
@@ -255,6 +253,8 @@ contract Staking is Ownable {
         <!> works with Remix!
     */
     function removeStake(address _tokenAddress) public{
+
+        uint stakingBalance;
 
         //calculation of the staked balance for the msg.sender
         for (uint i; i < historyStake[msg.sender][_tokenAddress].length; i++)

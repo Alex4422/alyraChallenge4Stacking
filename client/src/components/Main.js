@@ -44,10 +44,11 @@ class Main extends Component {
         console.log('amount', amount);
 
         //call of the method of the smart contract
-        /*await this.props.contract.methods.createStake(amount,currentAccount);
+        //await this.props.contract.methods.createStake(amount).send({from:accounts[0]});
         let historyStake = await this.props.contract.historyStake();
-        console.log('historyStake', historyStake);
-        */
+        //console.log('historyStake', historyStake);
+        //await contract.methods.registerProposal(yourProposal).send({from:accounts[0]});
+
     }
 
     /**

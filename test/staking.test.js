@@ -1,5 +1,5 @@
 const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
-const { expect } = require('chai');
+const { expect } = require('chai').use(require('chai-as-promised')).should;
 const Staking = artifacts.require('Staking');
 const StakeCoin = artifacts.require('StakeCoin');
 
@@ -130,11 +130,6 @@ contract("Staking", accounts => {
             const amountTransferred = new BN('100');
             const amountStaked = new BN('100');
 
-            //await this.stakeCoinInstance.transfer(stakeholder1, amountTransferred, {from: owner});
-            /*          await this.stakeCoinInstance.approve(this.stakingInstance.address, amountStaked, {from: owner});
-                      await this.stakingInstance.createStake(amountStaked, this.stakeCoinInstance.address, {from: owner});
-          */
-
             let result;
 
             //Check: stakeholder1 balance - stakeholder1 mock wallet balance before staking
@@ -146,11 +141,30 @@ contract("Staking", accounts => {
             await this.stakeCoinInstance.approve(this.stakingInstance.address, amountStaked, {from: stakeholder1});
             await this.stakingInstance.createStake(amountStaked, this.stakeCoinInstance.address, {from: stakeholder1});
 
-            // Check Updated Balance of Customer
+            // Check Updated Balance of stakeholder1
             result = (await this.stakeCoinInstance.balanceOf(stakeholder1)).toString();
-            //assert.equal(result.toString(), tokens('0'), 'customer mock wallet balance after staking 100 tokens')
-
+            //stakeholder1 mock wallet balance after staking 100 tokens
             expect(result).to.be.bignumber.equal(new BN('0'));
+
+            // Check Updated Balance of Staking SC
+            result = (await this.stakeCoinInstance.balanceOf(this.stakingInstance.address)).toString();
+
+            //Staking SC mock wallet balance after staking from stakeholder1
+            expect(result).to.be.bignumber.equal(amountStaked);
+
+            // Is Staking Update
+            result = (await this.stakingInstance.isStaking(stakeholder1)).toString();
+            //stakeholder1 is staking status after staking
+            expect(result).to.equal('true');
+
+            // distribute Rewards -- doesn't work, why? to investigate
+            //await this.stakingInstance.distributeRewards(this.stakeCoinInstance.address, {from: owner});
+
+            // Ensure Only the owner can distribute Tokens
+            //await this.stakingInstance.distributeRewards({from: stakeholder1}).should.be.rejected;
+
+            // Remove stake
+            await this.stakingInstance.removeStake(this.stakeCoinInstance, {from: stakeholder1});
 
             /*
             const receipt = await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner});

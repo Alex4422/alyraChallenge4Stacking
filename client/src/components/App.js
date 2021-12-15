@@ -60,13 +60,6 @@ class App extends Component {
                     console.log('userBalance: ', userBalance);
                     console.log('state of the object: ', this.state);
 
-                    //let stakingBalance = await decentralBank.methods.stakingBalance(this.state.account).call()
-
-                    let stakingBalance = await instance.methods.stakingBalance.call();
-
-                    this.setState({ stakingBalance: stakingBalance.toString()})
-
-
                     });
         } catch (error) {
             // Catch any errors for any of the above operations.
