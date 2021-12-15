@@ -252,7 +252,7 @@ contract Staking is Ownable {
     /**
         @notice a method for a stakeholder to remove a stake
         @param _tokenAddress we are managing the stake related to this token
-        <!> it works with Remix!
+        <!> works with Remix!
     */
     function removeStake(address _tokenAddress) public{
 
