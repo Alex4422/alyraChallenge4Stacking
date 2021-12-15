@@ -234,8 +234,10 @@ contract Staking is Ownable {
         //Update of historyStake
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
-        // Transfer tether tokens to this contract address for staking
-        stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
+        // Transfer stakeCoinToken tokens to this contract address for staking
+        //stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
+        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
+
 
         isStaking[msg.sender] = true;
         hasStaked[msg.sender] = true;

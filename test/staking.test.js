@@ -11,7 +11,11 @@ contract("Staking", accounts => {
     const stakeCoinAddress = accounts[3];
     const amount1 = new BN('10');
     const amount2 = new BN('20');
-    const initialStakeCoinSupply = new BN('10').pow(new BN('18'));
+    //const initialStakeCoinSupply = new BN('10').pow(new BN('18'));
+
+    function tokens(number) {
+        return web3.utils.toWei(number, 'ether')
+    }
 
     /**
      * Clean each time the instance of the smart contract
@@ -20,6 +24,12 @@ contract("Staking", accounts => {
 
         this.stakingInstance = await Staking.new(stakeCoinAddress);
         this.stakeCoinInstance = await StakeCoin.new(new BN('10').pow(new BN('18')));
+
+        // Transfer all tokens to Staking SC
+        //await this.stakeCoinInstance.transfer(this.stakingInstance.address, tokens('20'))
+        //await this.stakeCoinInstance.transfer(stakeholder1, tokens('10'), {from: owner});
+
+
 
 
     });
@@ -102,13 +112,59 @@ contract("Staking", accounts => {
     /**
      * Zone of the management (creation) of the stakes
      */
-    describe('C. adding stakes', function() {
+    describe.only('C. adding stakes', function() {
 
         beforeEach( async function() {
 
+            const amountTransferred = new BN('100');
+
             //make all the operations needed before
             await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
+            // Transfer 100 mock ethers to stakeholder1
+            await this.stakeCoinInstance.transfer(stakeholder1, amountTransferred, {from: owner})
+
         });
+
+        it('11b. test of the stake is created', async function() {
+
+            const amountTransferred = new BN('100');
+            const amountStaked = new BN('100');
+
+            //await this.stakeCoinInstance.transfer(stakeholder1, amountTransferred, {from: owner});
+            /*          await this.stakeCoinInstance.approve(this.stakingInstance.address, amountStaked, {from: owner});
+                      await this.stakingInstance.createStake(amountStaked, this.stakeCoinInstance.address, {from: owner});
+          */
+
+            let result;
+
+            //Check: stakeholder1 balance - stakeholder1 mock wallet balance before staking
+            result = (await this.stakeCoinInstance.balanceOf(stakeholder1)).toString();
+            console.log('result, balance of SK1:', result);
+            expect(result).to.be.bignumber.equal(amountTransferred);
+
+            // Check Staking For stakeholder1 of 100 tokens
+            await this.stakeCoinInstance.approve(this.stakingInstance.address, amountStaked, {from: stakeholder1});
+            await this.stakingInstance.createStake(amountStaked, this.stakeCoinInstance.address, {from: stakeholder1});
+
+            // Check Updated Balance of Customer
+            result = (await this.stakeCoinInstance.balanceOf(stakeholder1)).toString();
+            //assert.equal(result.toString(), tokens('0'), 'customer mock wallet balance after staking 100 tokens')
+
+            expect(result).to.be.bignumber.equal(new BN('0'));
+
+            /*
+            const receipt = await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner});
+            console.log('receipt: ', receipt);
+
+            expectEvent(receipt,
+                'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
+
+             */
+            //expectEvent(receipt, 'StakeCreated');
+
+        });
+
+
 
         xit('9. Checks stakeOf', async function() {
 
@@ -128,7 +184,7 @@ contract("Staking", accounts => {
 
         });
 
-        it('10. Transfer between 2 users', async function() {
+        xit('10. Transfer between 2 users', async function() {
             // We transfer some tokens to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amount1, {from:owner});
 
@@ -151,17 +207,6 @@ contract("Staking", accounts => {
 
         });
 
-        xit('11b. test of the stake is created', async function() {
-
-            const receipt = await this.stakingInstance.createStake(new BN('10'), stakeCoinAddress, {from: owner});
-            console.log('receipt: ', receipt);
-
-            /*expectEvent(receipt,
-                'StakeCreated', {stakeholderAddress: owner, stakeholderStake: new BN('10'), tokenAddress: stakeCoinAddress});
-*/
-            //expectEvent(receipt, 'StakeCreated');
-
-        });
 
 
 
@@ -238,7 +283,7 @@ contract("Staking", accounts => {
         });
 
 
-        describe.only('C2. Yield farming', async function () {
+        describe('C2. Yield farming', async function () {
 
             beforeEach( async function() {
 
@@ -248,7 +293,7 @@ contract("Staking", accounts => {
                 await this.stakeCoinInstance.transfer(stakeholder2, amount1, {from: owner});
             });
 
-            it('12. Rewards tokens for staking', async function () {
+            xit('12. Rewards tokens for staking', async function () {
 
                 let result;
 
