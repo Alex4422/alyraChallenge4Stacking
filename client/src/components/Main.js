@@ -38,18 +38,25 @@ class Main extends Component {
         //this.props.contract.methods.createStake().then(console.log).catch(console.error);
 
         console.log('inputValue', inputValue);
-        let amount;
-        amount = inputValue;
-        amount = this.props.web3.utils.toWei(amount, 'ether');
+        const amount = this.props.web3.utils.toWei(amount, 'ether');
         console.log('amount', amount);
 
         //call of the method of the smart contract
         //await this.props.contract.methods.createStake(amount).send({from:accounts[0]});
-        let historyStake = await this.props.contract.historyStake();
-        //console.log('historyStake', historyStake);
+        let historyStake = await this.props.contract.stakeOf(currentAccount,);
+        console.log('historyStake:', historyStake);
         //await contract.methods.registerProposal(yourProposal).send({from:accounts[0]});
-
     }
+
+    /*function getUsersCount() public constant returns(uint) {
+        return users.length;
+    }*/
+/*
+    function getHistoryStake(uint index) public constant returns(userAddress ,tokenAddress) {
+        return (users[index].idNum, users[index].name, users[index].userAddress);
+    }
+*/
+
 
     /**
      *

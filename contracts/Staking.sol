@@ -31,6 +31,8 @@ contract Staking is Ownable {
      */
     mapping (address => mapping(address => Stake[])) public historyStake;
 
+    mapping (address => address) public tokenStakedByUser;
+
     /**
      * @notice to know who are all the stakeholders
      */
@@ -66,8 +68,6 @@ contract Staking is Ownable {
      */
     mapping(address => bool) public hasStaked;
     mapping(address => bool) public isStaking;
-
-
 
     /**
      * @notice priceFeed consumes price data with AggregatorV3Interface
@@ -203,6 +203,20 @@ contract Staking is Ownable {
     }
 
     /**
+         @notice A method to retrieve the address of the token staked by the msg.sender
+         @return The sum in wei and the date of the stake
+         <!> OK!
+    */
+    function getStakedTokensOfUser() public view returns(uint,uint){
+
+        address _tokenStaked = tokenStakedByUser[msg.sender];
+        Stake[] memory stakes = historyStake[msg.sender][_tokenStaked];
+        return(stakes[0].amount,stakes[0].dateStaked);
+
+    }
+
+
+    /**
         @notice aggregates all the amounts staked of all stakeholders for a given token
         @param _tokenAddress We sum the staked amounts for this token
         @return uint256 The sum of the staked amounts from all stakeholders
@@ -235,7 +249,7 @@ contract Staking is Ownable {
         // Transfer stakeCoinToken tokens to this contract address for staking
         //stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
         IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
-
+        tokenStakedByUser[msg.sender] = _tokenAddress;
 
         isStaking[msg.sender] = true;
         //hasStaked[msg.sender] = true;
