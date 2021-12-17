@@ -215,7 +215,6 @@ contract Staking is Ownable {
 
     }
 
-
     /**
         @notice aggregates all the amounts staked of all stakeholders for a given token
         @param _tokenAddress We sum the staked amounts for this token
@@ -236,7 +235,7 @@ contract Staking is Ownable {
         @notice a method for a stakeholder to create a stake
         @param _stake The size of the stake to be created
         @param _tokenAddress we are managing the stake related to this token
-        <!> it works with Remix!
+        <!> it works with Remix! ASSUMPTION: WE STAKE ONLY ETHER
     */
     function createStake(uint256 _stake, address _tokenAddress) public {
 

@@ -27,7 +27,9 @@ class App extends Component {
             stakeCoinBalance: '0',
             stakingBalance: '0',
             loading: true,
-            userBalance: null
+            userBalance: null,
+            tokenAddress: null
+
         }
     }
 

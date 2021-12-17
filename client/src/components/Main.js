@@ -6,9 +6,10 @@ class Main extends Component {
         super(props);
         this.state = {
             inputValue: '',
-            errorMessage: '',
-            amount:''
+            errorMessage: ''
+
         }
+        console.log("this props", this.props);
     }
 
     /**
@@ -27,8 +28,9 @@ class Main extends Component {
      */
     handleDeposit = async(event) => {
 
+        console.log()
         event.preventDefault();
-        const {inputValue, web3, currentAccount} = this.state;
+        const {inputValue} = this.state;
 
         if (!this.isInputValid(inputValue)){
             this.setState({errorMessage: " type a number pls!"});
@@ -38,13 +40,15 @@ class Main extends Component {
         //this.props.contract.methods.createStake().then(console.log).catch(console.error);
 
         console.log('inputValue', inputValue);
-        const amount = this.props.web3.utils.toWei(amount, 'ether');
+        const amount = this.props.web3.utils.toWei(inputValue.toString(), 'ether');
+
         console.log('amount', amount);
 
+
         //call of the method of the smart contract
-        //await this.props.contract.methods.createStake(amount).send({from:accounts[0]});
-        let historyStake = await this.props.contract.stakeOf(currentAccount,);
-        console.log('historyStake:', historyStake);
+        await this.props.contract.methods.createStake(amount).send({from:this.props.currentAccount});
+        //let historyStake = await this.props.contract.stakeOf(currentAccount,);
+        //console.log('historyStake:', historyStake);
         //await contract.methods.registerProposal(yourProposal).send({from:accounts[0]});
     }
 
@@ -126,7 +130,7 @@ class Main extends Component {
                                        value={this.state.value}
                                        onChange={this.handleChange}
                                 />
-                                <button type='submit' className='btn btn-primary btn-lg btn-block' onClick={this.handleDeposit}>DEPOSIT</button>
+                                <button type='submit' className='btn btn-primary btn-lg btn-block' disabled={["",undefined].includes(this.props.currentAccount)} onClick={(e)=>this.handleDeposit(e)}>DEPOSIT</button>
                                 {this.state.errorMessage}
                             </div>
                         </div>
