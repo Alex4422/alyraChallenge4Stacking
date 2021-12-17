@@ -39,6 +39,7 @@ class App extends Component {
      */
     componentDidMount = async () => {
         try {
+                //************** LOAD Staking
                 // Get network provider and web3 instance.
                 const web3 = await getWeb3();
                 const networkId = await web3.eth.net.getId();
@@ -50,9 +51,19 @@ class App extends Component {
 
                 this.setState({web3: web3, contract: instance});
 
-                //Use web3 to get the user's accounts.
-                //const accounts = await web3.eth.getAccounts();
+                //************** LOAD STAKECOIN token
+                const stakeCoinData = StakeCoin.networks[networkId];
+                if(stakeCoinData) {
+                    const stakeCoin = new web3.eth.Contract(StakeCoin.abi, stakeCoinData.address);
+                    this.setState({stakeCoin});
+                } else {
+                    window.alert("stakeCoin contract not deployed to detect network")
+                }
 
+
+
+
+                //Use web3 to get the user's accounts.
                 window.ethereum.on('accountsChanged', async (accounts) => {
                     this.setState({accounts: accounts});
 
@@ -96,6 +107,7 @@ class App extends Component {
                                     Please, can you change first the address of your metamask wallet.
                                     <Main userBalance={this.state.userBalance} web3={this.state.web3} contract={this.state.contract}
                                           stakingBalance={this.state.stakingBalance} currentAccount={this.state.accounts[0]} contractName={contractName}
+                                          stakeCoin={this.state.stakeCoin}
                                     />
 
                                 </div>

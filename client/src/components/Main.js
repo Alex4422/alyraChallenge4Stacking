@@ -44,9 +44,18 @@ class Main extends Component {
 
         console.log('amount', amount);
 
+        await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
+
+            this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
+
+            });
+        });
+
+        let historyStake = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address);
+        console.log('historyStake', historyStake);
 
         //call of the method of the smart contract
-        await this.props.contract.methods.createStake(amount).send({from:this.props.currentAccount});
+        //await this.props.contract.methods.createStake(amount).send({from:this.props.currentAccount});
         //let historyStake = await this.props.contract.stakeOf(currentAccount,);
         //console.log('historyStake:', historyStake);
         //await contract.methods.registerProposal(yourProposal).send({from:accounts[0]});
@@ -111,7 +120,7 @@ class Main extends Component {
                         <div style={{borderSpacing:'0 1em'}}>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
-                                Balance: {userBalance && web3.utils.fromWei(userBalance.toString())}
+                                Your balance in Metamask: {userBalance && web3.utils.fromWei(userBalance.toString())}
                             </div>
 
                             <div className='float-right mb-4' style={{marginRight:'8px'}}>
