@@ -94,7 +94,9 @@ class App extends Component {
 
             <div className="App" style={{position:'relative'}}>
 
-                <Navbar  account={this.state.accounts}/>
+                {/*<Navbar  account={this.state.accounts}/>*/}
+
+                <Navbar  currentAccount={this.state.accounts[0]}/>
 
                     <div className='container-fluid mt-5'>
 

@@ -8,7 +8,6 @@ contract("Staking", accounts => {
     const owner = accounts[0];
     const stakeholder1 = accounts[1];
     const stakeholder2 = accounts[2];
-    const stakeCoinAddress = accounts[3];
     const amount1 = new BN('10');
     const amount2 = new BN('20');
     const stakingBalanceTest = new BN('0');
@@ -23,9 +22,8 @@ contract("Staking", accounts => {
      */
     beforeEach(async function () {
 
-        this.stakingInstance = await Staking.new(stakeCoinAddress);
         this.stakeCoinInstance = await StakeCoin.new(new BN('10').pow(new BN('18')));
-
+        this.stakingInstance = await Staking.new(this.stakeCoinInstance.address);
     });
 
     /**
@@ -119,7 +117,7 @@ contract("Staking", accounts => {
 
         });
 
-        it('9. test of the stake is created', async function() {
+        it('9. Management of the stake', async function() {
 
             const amountTransferred = new BN('100');
             const amountStaked = new BN('100');
@@ -265,31 +263,34 @@ contract("Staking", accounts => {
             beforeEach( async function() {
 
                 //make all the operations needed before
-                await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
                 await this.stakingInstance.addStakeholder(stakeholder2, {from: owner});
 
                 await this.stakeCoinInstance.approve(stakeholder1, amount1, {from:owner});
                 await this.stakeCoinInstance.transferFrom(owner, stakeholder2, amount1, {from: stakeholder1});
             });
 
-            xit('14. Revert operation: rewards can only be distributed by the contract owner', async function () {
+            it('14. Revert operation: rewards can only be distributed by the contract owner', async function () {
 
-                await expectRevert(this.stakingInstance.distributeRewards(stakeCoinAddress, {from: stakeholder2}),
+                await expectRevert(this.stakingInstance.distributeRewards(this.stakeCoinInstance.address, {from: stakeholder2}),
                     "Ownable: caller is not the owner");
 
             });
 
             xit('15. Sends an event after the rewards are distributed.', async function () {
 
-                expectEvent( await this.stakingInstance.distributeRewards(stakeCoinAddress, {from: owner}),
-                    'RewardsDistributed', {stakeholderAddress: owner, tokenAddress: stakeCoinAddress});
-
-                //expectEvent( await this.stakingInstance.___()...)
+                expectEvent( await this.stakingInstance.distributeRewards(this.stakeCoinInstance.address, {from: owner}),
+                    'RewardsDistributed', {stakeholderAddress: owner, tokenAddress: this.stakeCoinInstance.address});
             });
 
-            xit('16. Rewards can be withdrawn', async function () {
+            it('16. Reverts withdrawn operation if there is no reward to withdraw', async function () {
 
-                //expectEvent( await this.stakingInstance.___()...)
+                await expectRevert(this.stakingInstance.withdrawReward(), 'No reward to withdraw');
+            });
+
+            xit('17. Rewards can be withdrawn', async function () {
+
+                expectEvent( await this.stakingInstance.withdrawReward(),
+                    'RewardWithdrawn', {stakeholderAddress: owner});
             });
 
         });

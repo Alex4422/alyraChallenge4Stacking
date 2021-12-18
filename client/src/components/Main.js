@@ -44,15 +44,29 @@ class Main extends Component {
 
         console.log('amount', amount);
 
-        await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
+        /*await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
 
-            this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
+            await this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
 
-            });
         });
 
-        let historyStake = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address);
-        console.log('historyStake', historyStake);
+        });
+
+         */
+
+        const balanceOfTheCurrentUser = await this.props.stakeCoin.methods.balanceOf(this.props.currentAccount).call();
+        console.log('balanceOfTheCurrentUser: ', balanceOfTheCurrentUser);
+
+        const releaseApprove = await this.props.stakeCoin.methods.approve(this.props.contract._address, amount);
+        console.log('releaseApprove', releaseApprove);
+
+        //const releaseCreateStake = await this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from:this.props.currentAccount});
+        //console.log('releaseCreateStake: ', releaseCreateStake);
+
+
+
+        //let historyStake = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address);
+        //console.log('historyStake', historyStake);
 
         //call of the method of the smart contract
         //await this.props.contract.methods.createStake(amount).send({from:this.props.currentAccount});
@@ -60,16 +74,6 @@ class Main extends Component {
         //console.log('historyStake:', historyStake);
         //await contract.methods.registerProposal(yourProposal).send({from:accounts[0]});
     }
-
-    /*function getUsersCount() public constant returns(uint) {
-        return users.length;
-    }*/
-/*
-    function getHistoryStake(uint index) public constant returns(userAddress ,tokenAddress) {
-        return (users[index].idNum, users[index].name, users[index].userAddress);
-    }
-*/
-
 
     /**
      *
@@ -145,10 +149,6 @@ class Main extends Component {
                         </div>
                     </form>
                     <button className='btn btn-primary btn-lg btn-block' style={{maxWidth:'600px'}}>WITHDRAW</button>
-
-                    <div className='card-body text-center' style={{color:'blue'}}>
-                        AIRDROP
-                    </div>
 
                 </div>
             </div>
