@@ -245,7 +245,8 @@ contract Staking is Ownable {
         historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
         // Transfer stakeCoinToken tokens to this contract address for staking
-        //stakeCoinToken.transferFrom(msg.sender, address(this), _stake);
+
+        IERC20(_tokenAddress).approve(address(this),_stake);
         IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
         tokenStakedByUser[msg.sender] = _tokenAddress;
 

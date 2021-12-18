@@ -57,11 +57,17 @@ class Main extends Component {
         const balanceOfTheCurrentUser = await this.props.stakeCoin.methods.balanceOf(this.props.currentAccount).call();
         console.log('balanceOfTheCurrentUser: ', balanceOfTheCurrentUser);
 
-        const releaseApprove = await this.props.stakeCoin.methods.approve(this.props.contract._address, amount);
+        const releaseApprove = await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from:this.props.currentAccount});
         console.log('releaseApprove', releaseApprove);
 
-        //const releaseCreateStake = await this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from:this.props.currentAccount});
-        //console.log('releaseCreateStake: ', releaseCreateStake);
+        console.log('this.props.contract._address', this.props.contract._address);
+        console.log('this.props.contract._address', this.props.contract._address);
+
+        console.log('this.props.contract.options.address', this.props.contract.options.address);
+
+
+        const releaseCreateStake = await this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from:this.props.currentAccount});
+        console.log('releaseCreateStake: ', releaseCreateStake);
 
 
 
