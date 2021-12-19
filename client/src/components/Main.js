@@ -28,6 +28,8 @@ class Main extends Component {
      */
     handleDeposit = async(event) => {
 
+        const { web3, currentAccount  } = this.state;
+
         console.log()
         event.preventDefault();
         const {inputValue} = this.state;
@@ -54,9 +56,12 @@ class Main extends Component {
 
          */
 
+        /*
         const balanceOfTheCurrentUser = await this.props.stakeCoin.methods.balanceOf(this.props.currentAccount).call();
         console.log('balanceOfTheCurrentUser: ', balanceOfTheCurrentUser);
+         */
 
+        /*
         const releaseApprove = await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from:this.props.currentAccount});
         console.log('releaseApprove', releaseApprove);
 
@@ -64,21 +69,30 @@ class Main extends Component {
         console.log('this.props.contract._address', this.props.contract._address);
 
         console.log('this.props.contract.options.address', this.props.contract.options.address);
+        */
 
+
+        //const balanceStakingBeforeStake = this.props.web3.eth.getBalance(this.props.contract.options.address);
+
+        const balanceStakingBeforeStake = await this.props.contract.methods.getSCBalance().call();
+        console.log('balance Staking Before Stake: ', balanceStakingBeforeStake);
+
+
+        const historyStakeBeforeTheStakeOperation = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address).call();
+        console.log('historyStake Before The Stake Operation:', historyStakeBeforeTheStakeOperation);
+
+        const releaseApprove = await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from:this.props.currentAccount});
+        console.log('releaseApprove', releaseApprove);
 
         const releaseCreateStake = await this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from:this.props.currentAccount});
         console.log('releaseCreateStake: ', releaseCreateStake);
 
+        const historyStakeAfterTheStakeOperation = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address).call();
+        console.log('historyStake After The Stake Operation:', historyStakeAfterTheStakeOperation);
 
+        const balanceStakingAfterStake = await this.props.contract.methods.getSCBalance().call();
+        console.log('balance Staking After Stake: ', balanceStakingAfterStake);
 
-        //let historyStake = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address);
-        //console.log('historyStake', historyStake);
-
-        //call of the method of the smart contract
-        //await this.props.contract.methods.createStake(amount).send({from:this.props.currentAccount});
-        //let historyStake = await this.props.contract.stakeOf(currentAccount,);
-        //console.log('historyStake:', historyStake);
-        //await contract.methods.registerProposal(yourProposal).send({from:accounts[0]});
     }
 
     /**

@@ -62,6 +62,9 @@ contract Staking is Ownable {
      */
     address public ownerOfContract;
 
+    IERC20 private _token;
+
+
     /**
      * @notice to know the state of stakeholder related to the staking
      */
@@ -95,10 +98,10 @@ contract Staking is Ownable {
     //admin & user modifier
     event RewardWithdrawn(address stakeholderAddress);
 
-    /**
-     *  @notice to deploy ERC20 token
-     *  @param _stakeCoin StakeCoin token to instantiate
-     */
+
+
+
+    /*
     constructor(StakeCoin _stakeCoin) {
         ownerOfContract = msg.sender;
         if (address(_stakeCoin) == address(0)){
@@ -107,6 +110,11 @@ contract Staking is Ownable {
             stakeCoinToken = _stakeCoin;
         }
         priceFeed = AggregatorV3Interface(0x3Af8C569ab77af5230596Acf0E8c2F9351d24C38);
+    }
+    */
+
+    constructor (IERC20 token) public {
+        _token = token;
     }
 
     /**
@@ -117,7 +125,6 @@ contract Staking is Ownable {
         require(stakeholderFlag == true || msg.sender == ownerOfContract, "the address is not a stakeholder/admin!");
         _;
     }
-
 
     //======== Helper functions ========
     /**
@@ -139,6 +146,14 @@ contract Staking is Ownable {
 
         return price;
 
+    }
+
+    /**
+        @notice return the balance of the smart contract
+        @return balance
+    */
+    function getSCBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
     /**
@@ -236,28 +251,21 @@ contract Staking is Ownable {
         @param _tokenAddress we are managing the stake related to this token
         <!> it works with Remix! ASSUMPTION: WE STAKE ONLY ETHER
     */
-    function createStake(uint256 _stake, address _tokenAddress) public {
+    //function createStake(uint256 _stake, address _tokenAddress) public {
+    function createStake(uint256 _stake, address _tokenAddress) external {
 
         //require staking amount to be greater than zero
         require(_stake > 0, 'amount cannot be 0');
 
+        _token.transferFrom(msg.sender, address(this), _stake);
+
         //Update of historyStake
-        historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
+        //historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
-        // Transfer stakeCoinToken tokens to this contract address for staking
-
-        IERC20(_tokenAddress).approve(address(this),_stake);
-        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _stake);
         tokenStakedByUser[msg.sender] = _tokenAddress;
-
         isStaking[msg.sender] = true;
-        //hasStaked[msg.sender] = true;
 
         emit StakeCreated(msg.sender, _stake, _tokenAddress);
-
-        //for test: to clean after
-        //emit StakeCreated();
-
     }
 
     /**

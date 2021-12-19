@@ -60,9 +60,6 @@ class App extends Component {
                     window.alert("stakeCoin contract not deployed to detect network")
                 }
 
-
-
-
                 //Use web3 to get the user's accounts.
                 window.ethereum.on('accountsChanged', async (accounts) => {
                     this.setState({accounts: accounts});
@@ -72,6 +69,7 @@ class App extends Component {
 
                     console.log('userBalance: ', userBalance);
                     console.log('state of the object: ', this.state);
+
 
                     });
         } catch (error) {
