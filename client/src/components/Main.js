@@ -90,6 +90,8 @@ class Main extends Component {
         const historyStakeAfterTheStakeOperation = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address).call();
         console.log('historyStake After The Stake Operation:', historyStakeAfterTheStakeOperation);
 
+        //const balanceStakingAfterStake = await this.props.contract.methods.getSCBalance().call();
+
         const balanceStakingAfterStake = await this.props.contract.methods.getSCBalance().call();
         console.log('balance Staking After Stake: ', balanceStakingAfterStake);
 

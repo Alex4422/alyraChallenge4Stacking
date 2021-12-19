@@ -13,18 +13,15 @@ import "@openzeppelin/contracts/utils/Context.sol";
 contract StakeCoin is Context, ERC20, Ownable {
 
 
-    uint public initialStakeCoinSupply = 100 * 10 ** decimals();
+    uint public initialStakeCoinSupply = 10000 * (10 ** uint256(decimals()));
 
-
-
-    /*constructor(uint initialStakeCoinSupply) ERC20("Stake Coin Token", "STC") {
-        _mint(owner(), initialStakeCoinSupply);
-    }*/
-
-    constructor() public ERC20("Stake Coin Token", "STC") {
-        _mint(_msgSender(), 10000 * (10 ** uint256(decimals())));
+    /**
+        @notice the constructor for the Staking coin token
+        @dev the owner is the admin of the interface
+    */
+    constructor() ERC20("Stake Coin Token", "STC") {
+        _mint(_msgSender(), initialStakeCoinSupply );
     }
-
 
     /**
      *   @notice produces some tokens for a smart contract
@@ -37,22 +34,5 @@ contract StakeCoin is Context, ERC20, Ownable {
         _mint(to, value);
         return true;
     }
-
-    function transferCoin(address recipient, uint256 amount) public returns (bool success) {
-        _transfer(msg.sender, recipient, amount);
-        return(true);
-    }
-
-    function transferCoinFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-
-        transferFrom(_from,_to,_value);
-        return true;
-    }
-
-    function approve(address owner, address spender, uint256 amount) public returns (bool) {
-        _approve(owner, spender, amount);
-        return true;
-    }
-
 
 }

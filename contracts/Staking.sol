@@ -99,8 +99,6 @@ contract Staking is Ownable {
     event RewardWithdrawn(address stakeholderAddress);
 
 
-
-
     /*
     constructor(StakeCoin _stakeCoin) {
         ownerOfContract = msg.sender;
@@ -115,6 +113,8 @@ contract Staking is Ownable {
 
     constructor (IERC20 token) public {
         _token = token;
+        priceFeed = AggregatorV3Interface(0x3Af8C569ab77af5230596Acf0E8c2F9351d24C38);
+
     }
 
     /**
@@ -257,10 +257,11 @@ contract Staking is Ownable {
         //require staking amount to be greater than zero
         require(_stake > 0, 'amount cannot be 0');
 
+        //Transfer from this msg.sender to this contract
         _token.transferFrom(msg.sender, address(this), _stake);
 
         //Update of historyStake
-        //historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
+        historyStake[msg.sender][_tokenAddress].push(Stake(_stake, block.timestamp));
 
         tokenStakedByUser[msg.sender] = _tokenAddress;
         isStaking[msg.sender] = true;
