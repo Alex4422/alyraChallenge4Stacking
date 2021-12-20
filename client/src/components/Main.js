@@ -39,44 +39,10 @@ class Main extends Component {
             return
         }
 
-        //this.props.contract.methods.createStake().then(console.log).catch(console.error);
-
         console.log('inputValue', inputValue);
         const amount = this.props.web3.utils.toWei(inputValue.toString(), 'ether');
 
         console.log('amount', amount);
-
-        /*await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
-
-            await this.props.contract.methods.createStake(amount,this.props.stakeCoin._address).send({from: this.props.currentAccount}).on('transactionHash', (hash) => {
-
-        });
-
-        });
-
-         */
-
-        /*
-        const balanceOfTheCurrentUser = await this.props.stakeCoin.methods.balanceOf(this.props.currentAccount).call();
-        console.log('balanceOfTheCurrentUser: ', balanceOfTheCurrentUser);
-         */
-
-        /*
-        const releaseApprove = await this.props.stakeCoin.methods.approve(this.props.contract._address, amount).send({from:this.props.currentAccount});
-        console.log('releaseApprove', releaseApprove);
-
-        console.log('this.props.contract._address', this.props.contract._address);
-        console.log('this.props.contract._address', this.props.contract._address);
-
-        console.log('this.props.contract.options.address', this.props.contract.options.address);
-        */
-
-
-        //const balanceStakingBeforeStake = this.props.web3.eth.getBalance(this.props.contract.options.address);
-
-        const balanceStakingBeforeStake = await this.props.contract.methods.getSCBalance().call();
-        console.log('balance Staking Before Stake: ', balanceStakingBeforeStake);
-
 
         const historyStakeBeforeTheStakeOperation = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address).call();
         console.log('historyStake Before The Stake Operation:', historyStakeBeforeTheStakeOperation);
@@ -90,9 +56,6 @@ class Main extends Component {
         const historyStakeAfterTheStakeOperation = await this.props.contract.methods.stakeOf(this.props.currentAccount,this.props.stakeCoin._address).call();
         console.log('historyStake After The Stake Operation:', historyStakeAfterTheStakeOperation);
 
-        //const balanceStakingAfterStake = await this.props.contract.methods.getSCBalance().call();
-
-        const balanceStakingAfterStake = await this.props.contract.methods.getSCBalance().call();
         console.log('balance Staking After Stake: ', balanceStakingAfterStake);
 
     }

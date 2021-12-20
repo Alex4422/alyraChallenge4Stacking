@@ -3,17 +3,18 @@ pragma solidity 0.8.9;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
+
 
 /**
     @title StakeCoin
     @author Alex
     @notice Creates a basic ERC20 staking token with incentive distribution
 */
-contract StakeCoin is Context, ERC20, Ownable {
+contract StakeCoin is ERC20, Ownable {
 
 
-    uint public initialStakeCoinSupply = 10000 * (10 ** uint256(decimals()));
+    //uint public initialStakeCoinSupply = 10000 * (10 ** uint256(decimals()));
+    uint public initialStakeCoinSupply = 1e18;
 
     /**
         @notice the constructor for the Staking coin token

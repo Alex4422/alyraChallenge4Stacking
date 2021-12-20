@@ -22,7 +22,8 @@ contract("Staking", accounts => {
      */
     beforeEach(async function () {
 
-        this.stakeCoinInstance = await StakeCoin.new(new BN('10').pow(new BN('18')));
+        //this.stakeCoinInstance = await StakeCoin.new(new BN('10').pow(new BN('18')));
+        this.stakeCoinInstance = await StakeCoin.new();
         this.stakingInstance = await Staking.new(this.stakeCoinInstance.address);
     });
 
@@ -112,7 +113,7 @@ contract("Staking", accounts => {
 
             //make all the operations needed before
             await this.stakingInstance.addStakeholder(stakeholder1, {from: owner});
-            // Transfer 100 mock ethers to stakeholder1
+            // Transfer 100 mock Stake coin to stakeholder1
             await this.stakeCoinInstance.transfer(stakeholder1, amountTransferred, {from: owner})
 
         });

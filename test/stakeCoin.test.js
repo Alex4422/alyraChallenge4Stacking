@@ -13,7 +13,7 @@ contract("ERC20", (accounts) => {
      * Clean each time the instance of the smart contract
      */
     beforeEach(async () => {
-        erc20 = await ERC20Token.new(_initialStakeCoinSupply, {from: owner});
+        erc20 = await ERC20Token.new();
     });
 
     /**
